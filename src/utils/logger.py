@@ -1,16 +1,36 @@
+# utils/logger.py
 import logging
-import sys
+from datetime import datetime
 
-def setup_logger(name: str, level=logging.INFO) -> logging.Logger:
-    """Setup logger with consistent formatting"""
-    logger = logging.getLogger(name)
-    logger.setLevel(level)
+class Logger:
+    """Simple logger for the application"""
     
-    if not logger.handlers:
-        handler = logging.StreamHandler(sys.stdout)
-        handler.setFormatter(
-            logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
-        )
-        logger.addHandler(handler)
+    def __init__(self, name="VideoStreaming"):
+        self.logger = logging.getLogger(name)
+        self.logger.setLevel(logging.INFO)
+        
+        # Create console handler
+        ch = logging.StreamHandler()
+        ch.setLevel(logging.INFO)
+        
+        # Create formatter
+        formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+        ch.setFormatter(formatter)
+        
+        # Add handler to logger
+        self.logger.addHandler(ch)
     
-    return logger
+    def info(self, message):
+        self.logger.info(message)
+    
+    def error(self, message):
+        self.logger.error(message)
+    
+    def warning(self, message):
+        self.logger.warning(message)
+    
+    def debug(self, message):
+        self.logger.debug(message)
+
+# Global logger instance
+app_logger = Logger()

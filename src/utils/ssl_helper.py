@@ -1,19 +1,26 @@
-import ssl
+# src/utils/ssl_helper.py
 import os
-from pathlib import Path
+import subprocess
 
-def setup_ssl() -> ssl.SSLContext | None:
-    """Setup SSL context if certificates exist"""
-    cert_dir = Path("certs")
-    cert_file = cert_dir / "cert.pem"
-    key_file = cert_dir / "key.pem"
+def generate_self_signed_cert(cert_file="certTwo.pem", key_file="keyTwo.pem"):
+    """Generate a self-signed certificate for development"""
+    print("Generating self-signed SSL certificate...")
     
-    if cert_file.exists() and key_file.exists():
-        context = ssl.SSLContext(ssl.PROTOCOL_TLS_SERVER)
-        context.load_cert_chain(certfile=str(cert_file), keyfile=str(key_file))
-        print("✅ SSL enabled")
-        return context
+    print("\n⚠️  SSL Certificate Generation Required ⚠️")
+    print("\nTo generate SSL certificates on Linux:")
+    print("1. Install OpenSSL: sudo apt install openssl")
+    print("2. Generate certificate:")
+    print(f"   openssl req -x509 -newkey rsa:4096 -keyout {key_file} -out {cert_file} -days 365 -nodes -subj \"/C=US/ST=State/L=City/O=Organization/CN=localhost\"")
     
-    print("⚠️  SSL disabled (certificates not found)")
-    print("   Run: cd certs && python generate_certificates.py")
-    return None
+    print("\n⚠️  IMPORTANT: Self-signed certificates will show security warnings in browsers!")
+    
+    if os.path.exists(cert_file) and os.path.exists(key_file):
+        print("✅ Certificates found!")
+        return True
+    else:
+        print("❌ Certificates not found. SSL features will not work.")
+        return False
+
+def check_certificates(cert_file="certTwo.pem", key_file="keyTwo.pem"):
+    """Check if SSL certificates exist"""
+    return os.path.exists(cert_file) and os.path.exists(key_file)
