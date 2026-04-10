@@ -12,5 +12,6 @@ __all__ = [
     'select_camera', 
     'capture_frames',
     'process_frame',
-    'add_timestamp_to_frame'
+    'add_timestamp_to_frame',
+    'get_frame_info'
 ]
