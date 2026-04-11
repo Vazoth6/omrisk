@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Video Streaming Dashboard with Latency Measurement</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Video Streaming Dashboard</h1>
+        
+        <div class="info-box">
+            <strong>Conexão:</strong>
+            <div>HTTPS: <span id="httpsUrl">A carregar...</span></div>
+            <div>WebSocket: <span id="wsUrl">A carregar...</span></div>
+        </div>
+        
+        <div class="video-container">
+            <canvas id="videoCanvas" width="1280" height="720"></canvas>
+        </div>
+        
+        <div class="controls">
+            <button id="startBtn">▶ Iniciar Stream</button>
+            <button id="stopBtn" disabled>⏹ Parar Stream</button>
+            <button id="connectBtn">🔌 Conectar</button>
+            <button id="refreshBtn">🔄 Recarregar</button>
+            <button id="exportBtn">📊 Exportar Métricas</button>
+        </div>
+        
+        <div id="status">Estado: Disconectado</div>
+        
+        <div class="stats">
+            <div class="stat-card">
+                <h3>Frames Processadas</h3>
+                <div class="stat-value" id="frameCount">0</div>
+            </div>
+            <div class="stat-card">
+                <h3>Latência Total</h3>
+                <div class="stat-value" id="totalLatency">0</div>
+                <div class="stat-unit">ms</div>
+            </div>
+            <div class="stat-card">
+                <h3>FPS</h3>
+                <div class="stat-value" id="fpsCounter">0</div>
+                <div class="stat-unit">frames/sec</div>
+            </div>
+            <div class="stat-card">
+                <h3>Resolução</h3>
+                <div class="stat-value" id="resolution">-</div>
+            </div>
+        </div>
+        
+        <div class="latency-breakdown">
+            <h3>Métricas (ms)</h3>
+            <div class="latency-item">
+                <span>Captura:</span>
+                <span id="t1Capture">0.0</span>
+            </div>
+            <div class="latency-item">
+                <span>Processamento:</span>
+                <span id="t2Processing">0.0</span>
+            </div>
+            <div class="latency-item">
+                <span>Rede:</span>
+                <span id="t3Network">0.0</span>
+            </div>
+            <div class="latency-item">
+                <span>Descodificação:</span>
+                <span id="t4Decoding">0.0</span>
+            </div>
+            <div class="latency-item">
+                <span>Rendering:</span>
+                <span id="t5Rendering">0.0</span>
+            </div>
+            <div class="latency-item latency-total">
+                <span>Total:</span>
+                <span id="latencyTotal">0.0</span>
+            </div>
+        </div>
+    </div>
+
+    <script src="/static/js/websocket.js"></script>
+    <script src="/static/js/app.js"></script>
+</body>
+</html>

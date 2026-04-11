@@ -1,22 +1,21 @@
-#!/usr/bin/env python3
-# main.py - Main entry point for OMRisk Video Streaming Server
-
 import sys
 import os
 
 # Add src directory to Python path
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), 'src'))
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 # Import from the refactored modules
 from src.camera.device_manager import select_camera, list_cameras
 from src.camera.capture import capture_frames
 from src.metrics.latency_tracker import latency_metrics, print_latency_summary
 from src.metrics.metrics_collector import MetricsCollector
+from src.metrics.reporters import MetricsReporter
 from src.server.http_server import run_http_server
 from src.server.streaming_server import run_websocket_server
 from src.utils.network import get_ip_address, check_port_available, get_system_info
 from src.utils.ssl_helper import generate_self_signed_cert, check_certificates
 from src.utils.logger import setup_logger
+from src.web import get_html_content
 
 import threading
 import time
@@ -37,6 +36,20 @@ WS_PORT = 3001
 
 # Setup logger
 logger = setup_logger(__name__)
+
+html_content = get_html_content()
+
+'''http_thread = threading.Thread(
+    target=run_http_server,
+    args=(HTTP_PORT, current_frame, frame_lock, latency_metrics, html_content),
+    daemon=True,
+    name="HTTP-Server"
+)'''
+
+
+# Initialize metrics components
+metrics_collector = MetricsCollector(max_history=1000)
+metrics_reporter = MetricsReporter(auto_print=True, print_interval=10)
 
 def main():
     global current_frame
@@ -100,7 +113,7 @@ def main():
     print("-" * 40)
     http_thread = threading.Thread(
         target=run_http_server,
-        args=(HTTP_PORT, current_frame, frame_lock, connected_clients, latency_metrics),
+        args=(HTTP_PORT, current_frame, frame_lock, connected_clients, latency_metrics, html_content),
         daemon=True,
         name="HTTP-Server"
     )
