@@ -25,8 +25,8 @@ import cv2
 import numpy as np
 from typing import Optional
 
-# Global frame storage (shared between threads)
-current_frame: Optional[np.ndarray] = None
+# Global frame storage (shared between threads) - USING LIST FOR MUTABILITY
+current_frame = [None]  # List wrapper for thread-safe updates
 frame_lock = threading.Lock()
 
 # Configuration
@@ -38,14 +38,6 @@ WS_PORT = 3001
 logger = setup_logger(__name__)
 
 html_content = get_html_content()
-
-'''http_thread = threading.Thread(
-    target=run_http_server,
-    args=(HTTP_PORT, current_frame, frame_lock, latency_metrics, html_content),
-    daemon=True,
-    name="HTTP-Server"
-)'''
-
 
 # Initialize metrics components
 metrics_collector = MetricsCollector(max_history=1000)
@@ -92,9 +84,7 @@ def main():
     print("\n🎥 Starting Camera Capture")
     print("-" * 40)
     
-    # Create a wrapper function to update the global frame
     def capture_wrapper():
-        global current_frame
         capture_frames(camera_index, current_frame, frame_lock, latency_metrics)
     
     camera_thread = threading.Thread(
@@ -107,6 +97,26 @@ def main():
     # Give camera time to initialize
     print("Waiting for camera to initialize...")
     time.sleep(2)
+    
+    # CRITICAL: Wait for first frame
+    print("Waiting for first frame...")
+    frame_timeout = 10
+    start_wait = time.time()
+    frame_received = False
+    
+    while (time.time() - start_wait) < frame_timeout:
+        with frame_lock:
+            if current_frame[0] is not None:
+                frame_received = True
+                print(f"\n✅ First frame received! Shape: {current_frame[0].shape}")
+                break
+        print(".", end="", flush=True)
+        time.sleep(0.5)
+    
+    if not frame_received:
+        print("\n❌ No frames received from camera after 10 seconds!")
+        print("Check camera connection and permissions")
+        return
     
     # Start HTTP server in thread
     print("\n🌐 Starting HTTP Server")
@@ -178,7 +188,7 @@ def main():
                 
             # Display status
             with frame_lock:
-                frame_status = "Active" if current_frame is not None else "No frame"
+                frame_status = "Active" if current_frame[0] is not None else "No frame"
             
             print(f"\r📊 Status: Camera: {frame_status} | Clients: {len(connected_clients)} | "
                   f"Frames: {len(latency_metrics['t1_capture'])} | Press Ctrl+C to stop", end="")
@@ -201,7 +211,7 @@ def main():
         
         # Cleanup
         with frame_lock:
-            current_frame = None
+            current_frame[0] = None
         
         print("\n✅ All servers stopped. Goodbye!")
         print("="*60)

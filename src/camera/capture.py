@@ -10,7 +10,7 @@ def capture_frames(camera_index, current_frame, frame_lock, latency_metrics):
     
     Args:
         camera_index: Camera index or device path
-        current_frame: Global frame variable (will be updated)
+        current_frame: List containing the global frame (mutability fix)
         frame_lock: Lock for thread-safe frame access
         latency_metrics: Dictionary to store latency metrics
     """
@@ -65,9 +65,10 @@ def capture_frames(camera_index, current_frame, frame_lock, latency_metrics):
             # Calculate T1 in milliseconds
             t1_capture = (t1_end - t1_start) / 1_000_000
             
-            # Store frame with lock
+            # CRITICAL FIX: Store frame with lock using list index assignment
             with frame_lock:
-                current_frame = frame.copy()
+                # Since current_frame is a list, assign to index 0
+                current_frame[0] = frame.copy()
             
             # Store T1 metric
             latency_metrics['t1_capture'].append(t1_capture)
@@ -84,6 +85,13 @@ def capture_frames(camera_index, current_frame, frame_lock, latency_metrics):
                 print(f"  Frames: {frame_count} | FPS: {fps_calc:.1f}")
                 print(f"  Frame size: {frame.shape[1]}x{frame.shape[0]}")
                 print(f"  T1 Capture (last): {t1_capture:.2f}ms")
+                
+                # Verify frame was stored correctly
+                with frame_lock:
+                    if current_frame[0] is not None:
+                        print(f"  Frame stored successfully in list container")
+                    else:
+                        print(f"  WARNING: Frame storage failed!")
                 
                 if latency_metrics['t1_capture']:
                     avg_t1 = sum(latency_metrics['t1_capture'][-10:]) / min(10, len(latency_metrics['t1_capture']))

@@ -2,7 +2,7 @@
 import os
 import subprocess
 
-def generate_self_signed_cert(cert_file="certTwo.pem", key_file="keyTwo.pem"):
+def generate_self_signed_cert(cert_file="certs/certTwo.pem", key_file="certs/&keyTwo.pem"):
     """Generate a self-signed certificate for development"""
     print("Generating self-signed SSL certificate...")
     
@@ -21,6 +21,6 @@ def generate_self_signed_cert(cert_file="certTwo.pem", key_file="keyTwo.pem"):
         print("❌ Certificates not found. SSL features will not work.")
         return False
 
-def check_certificates(cert_file="certTwo.pem", key_file="keyTwo.pem"):
+def check_certificates(cert_file="certs/certTwo.pem", key_file="certs/keyTwo.pem"):
     """Check if SSL certificates exist"""
     return os.path.exists(cert_file) and os.path.exists(key_file)

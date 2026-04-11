@@ -4,195 +4,224 @@ import json
 import time
 import ssl
 import os
+import sys
 import websockets
 import cv2
 import numpy as np
-from typing import Set, Optional
-from src.camera.frame_processor import add_timestamp_to_frame
+import traceback
 
-# Global metrics storage will be passed from main
-connected_clients = set()
-
-async def ws_handler(websocket, current_frame, frame_lock, latency_metrics, connected_clients):
-    """WebSocket handler with latency measurement"""
-    print(f"New client connected from {websocket.remote_address}!")
-    connected_clients.add(websocket)
-    client_metrics = {
-        'frame_count': 0,
-        'last_print_time': time.time()
-    }
-    
+# Simple timestamp function without error handling issues
+def add_timestamp_to_frame(frame, timestamp_ns):
+    """Add timestamp as text overlay to frame"""
     try:
+        frame_copy = frame.copy()
+        timestamp_ms = timestamp_ns // 1_000_000
+        cv2.putText(frame_copy, f"TS:{timestamp_ms}", (10, 30),
+                    cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 255, 0), 2)
+        return frame_copy
+    except Exception as e:
+        print(f"Error adding timestamp: {e}")
+        return frame
+
+async def ws_handler(websocket, current_frame, frame_lock, latency_metrics, clients_set):
+    """WebSocket handler with latency measurement"""
+    client_addr = None
+    try:
+        client_addr = websocket.remote_address
+        print(f"✅ Client connected from {client_addr}")
+        
+        # Add client to set
+        clients_set.add(websocket)
+        print(f"👥 Total clients: {len(clients_set)}")
+        
+        # Send a welcome message
+        try:
+            await websocket.send(json.dumps({"type": "welcome", "message": "Connected to video stream server"}))
+            print("📤 Sent welcome message")
+        except Exception as e:
+            print(f"❌ Failed to send welcome: {e}")
+        
+        client_metrics = {
+            'frame_count': 0,
+            'last_print_time': time.time()
+        }
+        
+        # Main message loop
         async for message in websocket:
-            data = json.loads(message)
-            
-            if data.get("type") == "request_frame":
-                with frame_lock:
-                    if current_frame is not None:
-                        # Start timing for T2 (server processing)
+            try:
+                print(f"📨 Received: {message[:100]}...")
+                data = json.loads(message)
+                
+                if data.get("type") == "request_frame":
+                    print(f"🎬 Frame request #{client_metrics['frame_count']}")
+                    
+                    # Check if frame exists
+                    with frame_lock:
+                        if isinstance(current_frame, list):
+                            frame_available = current_frame[0] is not None
+                            current_frame_data = current_frame[0] if frame_available else None
+                        else:
+                            frame_available = current_frame is not None
+                            current_frame_data = current_frame if frame_available else None
+                    
+                    if not frame_available or current_frame_data is None:
+                        print("⚠️ No frame available, sending waiting response")
+                        await websocket.send(json.dumps({
+                            "type": "waiting",
+                            "message": "Camera not ready",
+                            "frame_index": client_metrics['frame_count']
+                        }))
+                        client_metrics['frame_count'] += 1
+                        continue
+                    
+                    try:
+                        # Start timing
                         t2_start = time.perf_counter_ns()
                         
-                        # Get current timestamp in milliseconds
+                        # Get timestamp
                         server_timestamp_ms = int(time.time() * 1000)
                         
-                        # Resize frame for better performance
-                        height, width = current_frame.shape[:2]
+                        # Resize frame
+                        height, width = current_frame_data.shape[:2]
                         max_dimension = 1280
                         if width > max_dimension:
                             scale = max_dimension / width
                             new_width = max_dimension
                             new_height = int(height * scale)
-                            frame_resized = cv2.resize(current_frame, (new_width, new_height))
+                            frame_resized = cv2.resize(current_frame_data, (new_width, new_height))
                         else:
-                            frame_resized = current_frame
+                            frame_resized = current_frame_data
                         
-                        # Add timestamp to frame
+                        # Add timestamp
                         frame_with_ts = add_timestamp_to_frame(frame_resized, server_timestamp_ms * 1_000_000)
                         
                         # Encode to JPEG
-                        encode_start = time.perf_counter_ns()
-                        _, buffer = cv2.imencode('.jpg', frame_with_ts, 
-                                                 [int(cv2.IMWRITE_JPEG_QUALITY), 70])
-                        encode_end = time.perf_counter_ns()
+                        success, buffer = cv2.imencode('.jpg', frame_with_ts, 
+                                                     [cv2.IMWRITE_JPEG_QUALITY, 70])
                         
-                        # Calculate T2 processing time
-                        t2_processing = (encode_end - t2_start) / 1_000_000  # ms
+                        if not success:
+                            print("❌ Failed to encode frame")
+                            continue
                         
-                        # Add metadata with timestamps
-                        metadata = {
-                            'server_timestamp_ms': server_timestamp_ms,
-                            't1_capture': data.get('t1_capture', 0),
-                            't2_processing': t2_processing,
-                            'frame_index': client_metrics['frame_count']
+                        # Calculate processing time
+                        t2_processing = (time.perf_counter_ns() - t2_start) / 1_000_000
+                        
+                        # Prepare response
+                        response = {
+                            'metadata': {
+                                'server_timestamp_ms': server_timestamp_ms,
+                                't1_capture': data.get('t1_capture', 0),
+                                't2_processing': t2_processing,
+                                'frame_index': client_metrics['frame_count']
+                            },
+                            'image_data': buffer.tobytes().hex()
                         }
                         
-                        # Create combined message with metadata
-                        combined_data = {
-                            'metadata': metadata,
-                            'image_data': buffer.tobytes().hex()  # Send as hex string
-                        }
-                        
-                        # Send to client
-                        await websocket.send(json.dumps(combined_data))
+                        # Send frame
+                        await websocket.send(json.dumps(response))
+                        print(f"📤 Frame #{client_metrics['frame_count']} sent, size: {len(buffer.tobytes())} bytes, T2: {t2_processing:.2f}ms")
                         
                         # Update metrics
                         latency_metrics['t2_processing'].append(t2_processing)
-                        
-                        # Print periodic summary
                         client_metrics['frame_count'] += 1
-                        current_time = time.time()
-                        if current_time - client_metrics['last_print_time'] >= 5:
-                            from src.metrics.latency_tracker import print_latency_summary
-                            print_latency_summary()
-                            client_metrics['last_print_time'] = current_time
-                            
-                    else:
-                        print("WARNING: current_frame is None!")
                         
-            elif data.get("type") == "latency_report":
-                # Client sends back latency measurements
-                report = data.get("data", {})
+                    except Exception as e:
+                        print(f"❌ Error processing frame: {e}")
+                        traceback.print_exc()
+                        await websocket.send(json.dumps({
+                            "type": "error",
+                            "message": f"Frame processing error: {str(e)}"
+                        }))
                 
-                # Store all metrics
-                for metric in ['t1_capture', 't3_network', 't4_decoding', 't5_rendering', 'total']:
-                    if metric in report:
-                        latency_metrics[metric].append(report[metric])
+                elif data.get("type") == "latency_report":
+                    report = data.get("data", {})
+                    for metric in ['t1_capture', 't3_network', 't4_decoding', 't5_rendering', 'total']:
+                        if metric in report:
+                            latency_metrics[metric].append(report[metric])
+                    print(f"📊 Latency - T1:{report.get('t1_capture',0):.1f}ms T3:{report.get('t3_network',0):.1f}ms Total:{report.get('total',0):.1f}ms")
                 
-                # Print individual frame latency
-                print(f"\n📊 Frame {report.get('frame_index', 0)} Latency:")
-                print(f"  T1 Capture:     {report.get('t1_capture', 0):6.2f}ms")
-                print(f"  T2 Processing:  {report.get('t2_processing', 0):6.2f}ms")
-                print(f"  T3 Network:     {report.get('t3_network', 0):6.2f}ms")
-                print(f"  T4 Decoding:    {report.get('t4_decoding', 0):6.2f}ms")
-                print(f"  T5 Rendering:   {report.get('t5_rendering', 0):6.2f}ms")
-                print(f"  TOTAL:          {report.get('total', 0):6.2f}ms")
+            except json.JSONDecodeError as e:
+                print(f"❌ Invalid JSON: {e}")
+            except Exception as e:
+                print(f"❌ Error in message loop: {e}")
+                traceback.print_exc()
                 
     except websockets.exceptions.ConnectionClosed as e:
-        print(f"Client disconnected: {e}")
+        print(f"🔌 Client {client_addr} disconnected: {e}")
     except Exception as e:
-        print(f"Error in ws_handler: {e}")
-        import traceback
+        print(f"💥 Fatal error in ws_handler: {e}")
         traceback.print_exc()
     finally:
-        if websocket in connected_clients:
-            connected_clients.remove(websocket)
+        if websocket in clients_set:
+            clients_set.remove(websocket)
+            print(f"👋 Client removed. Total clients: {len(clients_set)}")
 
 async def start_websocket_server(ws_port, current_frame, frame_lock, latency_metrics, connected_clients):
     """Start WebSocket server"""
-    print(f"\nStarting WebSocket server on port {ws_port}...")
+    print(f"\n🚀 Starting WebSocket server on port {ws_port}...")
     
     try:
-        ssl_context = ssl.SSLContext(ssl.PROTOCOL_TLS_SERVER)
-
+        # SSL setup (optional)
+        ssl_context = None
         cert_path = "certs/certTwo.pem"
         key_path = "certs/keyTwo.pem"
         
         if os.path.exists(cert_path) and os.path.exists(key_path):
+            ssl_context = ssl.SSLContext(ssl.PROTOCOL_TLS_SERVER)
             ssl_context.load_cert_chain(certfile=cert_path, keyfile=key_path)
-            print("✅ Encryption: SSL certificate loaded successfully")
-            use_ssl = ssl_context
+            print("✅ SSL enabled")
         else:
-            print(f"⚠️  Warning: Certificates not found at {cert_path} and {key_path}")
-            print("⚠️  Warning: Running WebSocket without SSL (ws://)")
-            print("   Browser may block mixed content (https + ws)")
-            use_ssl = None
+            print("⚠️ SSL disabled - using ws:// (browser may show warnings)")
         
-        # Try to start on the default port, if busy try alternative ports
-        port_to_use = ws_port
-        max_retries = 5
+        # Create handler
+        async def handler(websocket):
+            await ws_handler(websocket, current_frame, frame_lock, latency_metrics, connected_clients)
         
-        for attempt in range(max_retries):
-            try:
-                # Create handler with context
-                async def handler(websocket, path):
-                    await ws_handler(websocket, current_frame, frame_lock, latency_metrics, connected_clients)
-                
-                async with websockets.serve(
-                    handler, 
-                    '0.0.0.0',  # Listen on all interfaces
-                    port_to_use, 
-                    ssl=use_ssl,
-                    ping_interval=20,
-                    ping_timeout=40,
-                    max_size=10 * 1024 * 1024  # 10MB max message size
-                ):
-                    from src.utils.network import get_ip_address
-                    server_ip = get_ip_address()
-                    protocol = "wss" if use_ssl else "ws"
-                    print(f"✅ WebSocket server: Started on {protocol}://{server_ip}:{port_to_use}")
-                    print(f"   Also available at: {protocol}://localhost:{port_to_use}")
+        # Start server
+        async with websockets.serve(
+            handler, 
+            '0.0.0.0',
+            ws_port, 
+            ssl=ssl_context,
+            ping_interval=20,
+            ping_timeout=40,
+            max_size=10 * 1024 * 1024
+        ):
+            from src.utils.network import get_ip_address
+            server_ip = get_ip_address()
+            protocol = "wss" if ssl_context else "ws"
+            print(f"✅ WebSocket server running on {protocol}://{server_ip}:{ws_port}")
+            print(f"🔄 Waiting for connections...")
+            
+            # Keep running forever
+            await asyncio.Future()
                     
-                    await asyncio.Future()  # Run forever
-                break
-            except OSError as e:
-                if "98" in str(e) or "address already in use" in str(e).lower():
-                    if attempt < max_retries - 1:
-                        print(f"Port {port_to_use} is busy. Trying port {port_to_use + 1}...")
-                        port_to_use += 1
-                    else:
-                        print(f"❌ Failed to find an available port after {max_retries} attempts")
-                        return
-                else:
-                    raise e
-                    
+    except OSError as e:
+        if "98" in str(e) or "address already in use" in str(e).lower():
+            print(f"❌ Port {ws_port} is already in use!")
+            print("   Try: sudo lsof -i :3001")
+        else:
+            print(f"❌ Server error: {e}")
+            traceback.print_exc()
     except Exception as e:
-        print(f"❌ Failed to start WebSocket server: {e}")
-        import traceback
+        print(f"❌ Server error: {e}")
         traceback.print_exc()
 
-def run_websocket_server(ws_port, current_frame, frame_lock, latency_metrics, connected_clients):
+def run_websocket_server(ws_port, current_frame, frame_lock, connected_clients, latency_metrics):
     """Run WebSocket server in its own event loop"""
-    # Set up proper event loop
+    print("🔵 Starting WebSocket thread...")
+    
+    # Create new event loop
     loop = asyncio.new_event_loop()
     asyncio.set_event_loop(loop)
     
     try:
         loop.run_until_complete(start_websocket_server(ws_port, current_frame, frame_lock, latency_metrics, connected_clients))
     except KeyboardInterrupt:
-        print("\nWebSocket server stopped by user")
+        print("\n⚠️ WebSocket interrupted")
     except Exception as e:
-        print(f"WebSocket server error: {e}")
-        import traceback
+        print(f"❌ WebSocket fatal: {e}")
         traceback.print_exc()
     finally:
         loop.close()
+        print("🔵 WebSocket thread stopped")

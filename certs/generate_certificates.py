@@ -5,8 +5,8 @@ from pathlib import Path
 def generate_certificates():
     """Generate SSL certificates using OpenSSL"""
     cert_dir = Path(__file__).parent
-    cert_file = cert_dir / "cert.pem"
-    key_file = cert_dir / "key.pem"
+    cert_file = cert_dir / "certTwo.pem"
+    key_file = cert_dir / "keyTwo.pem"
     
     if cert_file.exists() and key_file.exists():
         print("✅ Certificates already exist")

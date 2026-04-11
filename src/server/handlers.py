@@ -48,15 +48,27 @@ class SimpleHTTPRequestHandler(BaseHTTPRequestHandler):
 
         elif self.path == "/debug":
             self.send_response(200)
-            current_frame = _handler_context.get('current_frame')
+            current_frame_container = _handler_context.get('current_frame')
             frame_lock = _handler_context.get('frame_lock')
             
-            if current_frame is not None and frame_lock:
+            # CRITICAL FIX: Check if current_frame is a list and get the first element
+            if current_frame_container is not None and frame_lock:
                 with frame_lock:
-                    _, buffer = cv2.imencode('.jpg', current_frame)
-                    self.send_header("Content-type", "image/jpeg")
-                    self.end_headers()
-                    self.wfile.write(buffer.tobytes())
+                    # Handle both list container and direct frame for backward compatibility
+                    if isinstance(current_frame_container, list):
+                        frame = current_frame_container[0]
+                    else:
+                        frame = current_frame_container
+                    
+                    if frame is not None:
+                        _, buffer = cv2.imencode('.jpg', frame)
+                        self.send_header("Content-type", "image/jpeg")
+                        self.end_headers()
+                        self.wfile.write(buffer.tobytes())
+                    else:
+                        self.send_header("Content-type", "text/html")
+                        self.end_headers()
+                        self.wfile.write(b"<h1>No frame available (frame is None)</h1>")
             else:
                 self.send_header("Content-type", "text/html")
                 self.end_headers()
@@ -67,9 +79,19 @@ class SimpleHTTPRequestHandler(BaseHTTPRequestHandler):
             self.send_response(200)
             self.send_header("Content-type", "application/json")
             self.end_headers()
+            
+            current_frame_container = _handler_context.get('current_frame')
+            # Check if frame exists (handle list container)
+            frame_exists = False
+            if current_frame_container is not None:
+                if isinstance(current_frame_container, list):
+                    frame_exists = current_frame_container[0] is not None
+                else:
+                    frame_exists = current_frame_container is not None
+            
             health_data = {
                 "status": "running",
-                "camera": _handler_context.get('current_frame') is not None,
+                "camera": frame_exists,
                 "clients": len(_handler_context.get('connected_clients', set())),
                 "timestamp": time.time(),
                 "latency_samples": {k: len(v) for k, v in _handler_context.get('latency_metrics', {}).items()}
@@ -94,11 +116,19 @@ class SimpleHTTPRequestHandler(BaseHTTPRequestHandler):
                         "last_10_avg": sum(values[-10:]) / min(10, len(values)) if values else 0
                     }
             
+            current_frame_container = _handler_context.get('current_frame')
+            frame_exists = False
+            if current_frame_container is not None:
+                if isinstance(current_frame_container, list):
+                    frame_exists = current_frame_container[0] is not None
+                else:
+                    frame_exists = current_frame_container is not None
+            
             metrics_data = {
                 "timestamp": time.time(),
                 "metrics": metrics_stats,
                 "connected_clients": len(_handler_context.get('connected_clients', set())),
-                "current_frame": _handler_context.get('current_frame') is not None
+                "current_frame": frame_exists
             }
             self.wfile.write(json.dumps(metrics_data, indent=2).encode())
             return
