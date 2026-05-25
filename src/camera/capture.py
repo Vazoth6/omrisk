@@ -31,8 +31,8 @@ def capture_frames(camera_index, current_frame, frame_lock, latency_metrics):
     
     # Try to set optimal properties for V4L2
     try:
-        cap.set(cv2.CAP_PROP_FRAME_WIDTH, 1280)
-        cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 720)
+        cap.set(cv2.CAP_PROP_FRAME_WIDTH, 640) # 640
+        cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 640) # 640
         cap.set(cv2.CAP_PROP_FPS, 30)
         cap.set(cv2.CAP_PROP_FOURCC, cv2.VideoWriter_fourcc(*'MJPG'))
     except Exception as e:
@@ -68,12 +68,9 @@ def capture_frames(camera_index, current_frame, frame_lock, latency_metrics):
             # CRITICAL FIX: Store frame with lock using list index assignment
             with frame_lock:
                 # Since current_frame is a list, assign to index 0
-                current_frame[0] = frame.copy()
+                current_frame[0] = frame.copy()                   
             
-            # Store T1 metric
-            latency_metrics['t1_capture'].append(t1_capture)
-            
-            frame_count += 1
+            # Store T1 metricsrc/metrics/latency_tracker.py
             
             # Print periodic status
             current_time = time.time()

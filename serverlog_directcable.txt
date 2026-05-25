@@ -1,0 +1,1607 @@
+Required Python packages:
+  • websockets
+  • opencv-python
+  • numpy
+
+Install with: pip install websockets opencv-python numpy
+============================================================
+
+🔍 Checking for V4L2 utilities...
+✅ v4l2-ctl is available
+
+🔍 Checking for port conflicts...
+
+============================================================
+OMRISK VIDEO STREAMING SERVER WITH LATENCY MEASUREMENT
+============================================================
+Version: 1.0.0
+Server IP: 192.168.1.150
+Hostname: omrisk
+Platform: Linux-6.12.47+rpt-rpi-2712-aarch64-with-glibc2.41
+Python: 3.13.5 (main, Jun 25 2025, 18:55:22) [GCC 14.2.0]
+
+🔍 Checking for port conflicts...
+
+📷 Camera Selection
+----------------------------------------
+Scanning for cameras using V4L2...
+Found: /dev/video0 (640x480, 30.0 FPS)
+
+✅ Found 1 camera(s):
+1. /dev/video0 (640x480, 30.0 FPS)
+
+Using the only available camera: /dev/video0 (640x480, 30.0 FPS)
+
+🔐 SSL Certificate Check
+----------------------------------------
+
+🎥 Starting Camera Capture
+----------------------------------------
+
+Initializing camera /dev/video0...
+Waiting for camera to initialize...
+Camera settings: 1280x720 at 30.0 FPS
+Press Ctrl+C in the terminal to stop capturing
+Waiting for first frame...
+
+✅ First frame received! Shape: (720, 1280, 3)
+
+🌐 Starting HTTP Server
+----------------------------------------
+
+✅ HTTPS server: Running at https://192.168.1.150:8000
+   Also available at: https://localhost:8000
+   Metrics endpoint: https://192.168.1.150:8000/metrics
+
+📊 Capture Status:
+  Frames: 37 | FPS: 18.3
+  Frame size: 1280x720
+  T1 Capture (last): 8.17ms
+  Frame stored successfully in list container
+  T1 Avg (last 10): 8.05ms
+
+🔄 Starting WebSocket Server
+----------------------------------------
+🔵 Starting WebSocket thread...
+
+🚀 Starting WebSocket server on port 3001...
+✅ SSL enabled
+✅ WebSocket server running on wss://192.168.1.150:3001
+🔄 Waiting for connections...
+
+📊 Capture Status:
+  Frames: 91 | FPS: 22.6
+  Frame size: 1280x720
+  T1 Capture (last): 7.96ms
+  Frame stored successfully in list container
+  T1 Avg (last 10): 8.05ms
+
+============================================================
+✅ SERVERS ARE RUNNING
+============================================================
+
+📺 Open your browser and visit:
+   https://192.168.1.150:8000
+   or
+   https://localhost:8000
+
+📊 Available endpoints:
+   • /         - Streaming dashboard
+   • /debug    - Camera debug view
+   • /health   - System health status
+   • /metrics  - Latency metrics (JSON)
+
+📈 Latency metrics will be displayed:
+   • T1 - Capture time (camera to memory)
+   • T2 - Processing time (resize + encode)
+   • T3 - Network time (server → client)
+   • T4 - Decoding time (JPEG → bitmap)
+   • T5 - Rendering time (canvas draw)
+   • TOTAL - Sum of all components
+
+🛑 Press Ctrl+C to stop all servers
+============================================================
+
+============================================================
+📊 LATENCY METRICS SUMMARY
+============================================================
+No latency data collected yet.
+
+📊 Capture Status:
+  Frames: 145 | FPS: 24.0
+  Frame size: 1280x720
+  T1 Capture (last): 7.97ms
+  Frame stored successfully in list container
+  T1 Avg (last 10): 8.02ms
+📊 Status: Camera: Active | Clients: 0 | Frames: 168 | Press Ctrl+C to stop📊 Status: Camera: Active | Clients: 0 | Frames: 195 | Press Ctrl+C to stop
+📊 Capture Status:
+  Frames: 199 | FPS: 24.7
+  Frame size: 1280x720
+  T1 Capture (last): 7.97ms
+  Frame stored successfully in list container
+  T1 Avg (last 10): 8.04ms
+📊 Status: Camera: Active | Clients: 0 | Frames: 222 | Press Ctrl+C to stop📊 Status: Camera: Active | Clients: 0 | Frames: 249 | Press Ctrl+C to stop
+📊 Capture Status:
+  Frames: 253 | FPS: 25.2
+  Frame size: 1280x720
+  T1 Capture (last): 7.94ms
+  Frame stored successfully in list container
+  T1 Avg (last 10): 8.03ms
+📊 Status: Camera: Active | Clients: 0 | Frames: 276 | Press Ctrl+C to stop📊 Status: Camera: Active | Clients: 0 | Frames: 303 | Press Ctrl+C to stop
+📊 Capture Status:
+  Frames: 307 | FPS: 25.5
+  Frame size: 1280x720
+  T1 Capture (last): 7.89ms
+  Frame stored successfully in list container
+  T1 Avg (last 10): 7.98ms
+📊 Status: Camera: Active | Clients: 0 | Frames: 330 | Press Ctrl+C to stop📊 Status: Camera: Active | Clients: 0 | Frames: 357 | Press Ctrl+C to stop
+📊 Capture Status:
+  Frames: 361 | FPS: 25.7
+  Frame size: 1280x720
+  T1 Capture (last): 7.94ms
+  Frame stored successfully in list container
+  T1 Avg (last 10): 8.03ms
+📊 Status: Camera: Active | Clients: 0 | Frames: 384 | Press Ctrl+C to stop
+============================================================
+📊 LATENCY METRICS SUMMARY
+============================================================
+No latency data collected yet.
+📊 Status: Camera: Active | Clients: 0 | Frames: 411 | Press Ctrl+C to stop
+📊 Capture Status:
+  Frames: 415 | FPS: 25.8
+  Frame size: 1280x720
+  T1 Capture (last): 7.95ms
+  Frame stored successfully in list container
+  T1 Avg (last 10): 8.03ms
+✅ Client connected from ('192.168.1.160', 57996)
+👥 Total clients: 1
+📤 Sent welcome message
+📨 Received: {"type": "request_frame"}...
+🎬 Frame request #0
+📤 Frame #0 sent, size: 107421 bytes, T2: 8.54ms
+📨 Received: {"type": "request_frame"}...
+🎬 Frame request #1
+📤 Frame #1 sent, size: 107440 bytes, T2: 6.37ms
+📨 Received: {"type": "request_frame"}...
+🎬 Frame request #2
+📤 Frame #2 sent, size: 107315 bytes, T2: 5.98ms
+📊 Status: Camera: Active | Clients: 1 | Frames: 439 | Press Ctrl+C to stop📨 Received: {"type": "request_frame"}...
+🎬 Frame request #3
+📤 Frame #3 sent, size: 107568 bytes, T2: 5.98ms
+📨 Received: {"type": "request_frame"}...
+🎬 Frame request #4
+📤 Frame #4 sent, size: 107994 bytes, T2: 6.27ms
+📨 Received: {"type": "request_frame"}...
+🎬 Frame request #5
+📤 Frame #5 sent, size: 107737 bytes, T2: 5.96ms
+📨 Received: {"type": "request_frame"}...
+🎬 Frame request #6
+📤 Frame #6 sent, size: 107764 bytes, T2: 5.98ms
+📨 Received: {"type": "request_frame"}...
+🎬 Frame request #7
+📤 Frame #7 sent, size: 107579 bytes, T2: 5.97ms
+📨 Received: {"type": "request_frame"}...
+🎬 Frame request #8
+📤 Frame #8 sent, size: 107826 bytes, T2: 6.02ms
+📨 Received: {"type": "request_frame"}...
+🎬 Frame request #9
+📤 Frame #9 sent, size: 107824 bytes, T2: 6.07ms
+📨 Received: {"type": "request_frame"}...
+🎬 Frame request #10
+📤 Frame #10 sent, size: 107514 bytes, T2: 6.05ms
+📨 Received: {"type": "request_frame"}...
+🎬 Frame request #11
+📤 Frame #11 sent, size: 107741 bytes, T2: 6.68ms
+📊 Status: Camera: Active | Clients: 1 | Frames: 467 | Press Ctrl+C to stop📨 Received: {"type": "request_frame"}...
+🎬 Frame request #12
+📤 Frame #12 sent, size: 107643 bytes, T2: 5.98ms
+
+📊 Capture Status:
+  Frames: 472 | FPS: 26.1
+  Frame size: 1280x720
+  T1 Capture (last): 5.91ms
+  Frame stored successfully in list container
+  T1 Avg (last 10): 6.04ms
+📨 Received: {"type": "request_frame"}...
+🎬 Frame request #13
+📤 Frame #13 sent, size: 107700 bytes, T2: 5.94ms
+📨 Received: {"type": "request_frame"}...
+🎬 Frame request #14
+📤 Frame #14 sent, size: 107654 bytes, T2: 5.99ms
+📨 Received: {"type": "request_frame"}...
+🎬 Frame request #15
+📤 Frame #15 sent, size: 107672 bytes, T2: 6.01ms
+📨 Received: {"type": "request_frame"}...
+🎬 Frame request #16
+📤 Frame #16 sent, size: 107864 bytes, T2: 5.92ms
+📨 Received: {"type": "request_frame"}...
+🎬 Frame request #17
+📤 Frame #17 sent, size: 107756 bytes, T2: 6.01ms
+📨 Received: {"type": "request_frame"}...
+🎬 Frame request #18
+📤 Frame #18 sent, size: 107748 bytes, T2: 6.72ms
+📨 Received: {"type": "request_frame"}...
+🎬 Frame request #19
+📤 Frame #19 sent, size: 107699 bytes, T2: 5.95ms
+📊 Status: Camera: Active | Clients: 1 | Frames: 496 | Press Ctrl+C to stop📨 Received: {"type": "request_frame"}...
+🎬 Frame request #20
+📤 Frame #20 sent, size: 107965 bytes, T2: 6.00ms
+📨 Received: {"type": "request_frame"}...
+🎬 Frame request #21
+📤 Frame #21 sent, size: 107748 bytes, T2: 6.08ms
+📨 Received: {"type": "request_frame"}...
+🎬 Frame request #22
+📤 Frame #22 sent, size: 107913 bytes, T2: 5.99ms
+📨 Received: {"type": "request_frame"}...
+🎬 Frame request #23
+📤 Frame #23 sent, size: 107611 bytes, T2: 6.85ms
+📨 Received: {"type": "request_frame"}...
+🎬 Frame request #24
+📤 Frame #24 sent, size: 107638 bytes, T2: 5.97ms
+📨 Received: {"type": "request_frame"}...
+🎬 Frame request #25
+📤 Frame #25 sent, size: 107651 bytes, T2: 5.95ms
+📨 Received: {"type": "request_frame"}...
+🎬 Frame request #26
+📤 Frame #26 sent, size: 107690 bytes, T2: 6.01ms
+📨 Received: {"type": "request_frame"}...
+🎬 Frame request #27
+📤 Frame #27 sent, size: 107523 bytes, T2: 6.06ms
+📨 Received: {"type": "request_frame"}...
+🎬 Frame request #28
+📤 Frame #28 sent, size: 107828 bytes, T2: 6.26ms
+📊 Status: Camera: Active | Clients: 1 | Frames: 524 | Press Ctrl+C to stop📨 Received: {"type": "request_frame"}...
+🎬 Frame request #29
+📤 Frame #29 sent, size: 107912 bytes, T2: 5.91ms
+📨 Received: {"type": "request_frame"}...
+🎬 Frame request #30
+📤 Frame #30 sent, size: 107610 bytes, T2: 5.96ms
+
+📊 Capture Status:
+  Frames: 530 | FPS: 26.4
+  Frame size: 1280x720
+  T1 Capture (last): 6.10ms
+  Frame stored successfully in list container
+  T1 Avg (last 10): 5.94ms
+📨 Received: {"type": "request_frame"}...
+🎬 Frame request #31
+📤 Frame #31 sent, size: 107730 bytes, T2: 5.96ms
+📨 Received: {"type": "request_frame"}...
+🎬 Frame request #32
+📤 Frame #32 sent, size: 107573 bytes, T2: 5.94ms
+📨 Received: {"type": "request_frame"}...
+🎬 Frame request #33
+📤 Frame #33 sent, size: 107701 bytes, T2: 6.17ms
+📨 Received: {"type": "request_frame"}...
+🎬 Frame request #34
+📤 Frame #34 sent, size: 107717 bytes, T2: 6.24ms
+📨 Received: {"type": "request_frame"}...
+🎬 Frame request #35
+📤 Frame #35 sent, size: 107854 bytes, T2: 5.95ms
+📨 Received: {"type": "request_frame"}...
+🎬 Frame request #36
+📤 Frame #36 sent, size: 107784 bytes, T2: 6.07ms
+📨 Received: {"type": "request_frame"}...
+🎬 Frame request #37
+📤 Frame #37 sent, size: 107777 bytes, T2: 6.13ms
+📊 Status: Camera: Active | Clients: 1 | Frames: 553 | Press Ctrl+C to stop📨 Received: {"type": "request_frame"}...
+🎬 Frame request #38
+📤 Frame #38 sent, size: 107735 bytes, T2: 6.00ms
+📨 Received: {"type": "request_frame"}...
+🎬 Frame request #39
+📤 Frame #39 sent, size: 107824 bytes, T2: 5.96ms
+📨 Received: {"type": "request_frame"}...
+🎬 Frame request #40
+📤 Frame #40 sent, size: 107878 bytes, T2: 6.26ms
+📨 Received: {"type": "request_frame"}...
+🎬 Frame request #41
+📤 Frame #41 sent, size: 107797 bytes, T2: 6.22ms
+📨 Received: {"type": "request_frame"}...
+🎬 Frame request #42
+📤 Frame #42 sent, size: 107687 bytes, T2: 5.97ms
+📨 Received: {"type": "request_frame"}...
+🎬 Frame request #43
+📤 Frame #43 sent, size: 107712 bytes, T2: 8.11ms
+📨 Received: {"type": "request_frame"}...
+🎬 Frame request #44
+📤 Frame #44 sent, size: 107759 bytes, T2: 8.15ms
+📨 Received: {"type": "request_frame"}...
+🎬 Frame request #45
+📤 Frame #45 sent, size: 107697 bytes, T2: 8.41ms
+📨 Received: {"type": "request_frame"}...
+🎬 Frame request #46
+📤 Frame #46 sent, size: 107723 bytes, T2: 8.35ms
+📊 Status: Camera: Active | Clients: 1 | Frames: 580 | Press Ctrl+C to stop📨 Received: {"type": "request_frame"}...
+🎬 Frame request #47
+📤 Frame #47 sent, size: 107656 bytes, T2: 8.08ms
+
+📊 Capture Status:
+  Frames: 586 | FPS: 26.5
+  Frame size: 1280x720
+  T1 Capture (last): 8.09ms
+  Frame stored successfully in list container
+  T1 Avg (last 10): 8.21ms
+📨 Received: {"type": "request_frame"}...
+🎬 Frame request #48
+📤 Frame #48 sent, size: 107708 bytes, T2: 8.14ms
+📨 Received: {"type": "request_frame"}...
+🎬 Frame request #49
+📤 Frame #49 sent, size: 107812 bytes, T2: 9.44ms
+📨 Received: {"type": "request_frame"}...
+🎬 Frame request #50
+📤 Frame #50 sent, size: 107642 bytes, T2: 8.11ms
+📨 Received: {"type": "request_frame"}...
+🎬 Frame request #51
+📤 Frame #51 sent, size: 107778 bytes, T2: 8.28ms
+📨 Received: {"type": "request_frame"}...
+🎬 Frame request #52
+📤 Frame #52 sent, size: 107730 bytes, T2: 9.06ms
+📨 Received: {"type": "request_frame"}...
+🎬 Frame request #53
+📤 Frame #53 sent, size: 107837 bytes, T2: 8.41ms
+📨 Received: {"type": "request_frame"}...
+🎬 Frame request #54
+📤 Frame #54 sent, size: 107699 bytes, T2: 8.12ms
+📊 Status: Camera: Active | Clients: 1 | Frames: 607 | Press Ctrl+C to stop📨 Received: {"type": "request_frame"}...
+🎬 Frame request #55
+📤 Frame #55 sent, size: 107721 bytes, T2: 8.21ms
+📨 Received: {"type": "request_frame"}...
+🎬 Frame request #56
+📤 Frame #56 sent, size: 107761 bytes, T2: 8.17ms
+📨 Received: {"type": "request_frame"}...
+🎬 Frame request #57
+📤 Frame #57 sent, size: 107582 bytes, T2: 8.35ms
+📨 Received: {"type": "request_frame"}...
+🎬 Frame request #58
+📤 Frame #58 sent, size: 107847 bytes, T2: 8.10ms
+📨 Received: {"type": "request_frame"}...
+🎬 Frame request #59
+📤 Frame #59 sent, size: 107557 bytes, T2: 8.14ms
+📨 Received: {"type": "request_frame"}...
+🎬 Frame request #60
+📤 Frame #60 sent, size: 107828 bytes, T2: 8.19ms
+📨 Received: {"type": "request_frame"}...
+🎬 Frame request #61
+📤 Frame #61 sent, size: 107795 bytes, T2: 7.78ms
+📨 Received: {"type": "request_frame"}...
+🎬 Frame request #62
+📤 Frame #62 sent, size: 107775 bytes, T2: 8.68ms
+📨 Received: {"type": "request_frame"}...
+🎬 Frame request #63
+📊 Status: Camera: Active | Clients: 1 | Frames: 634 | Press Ctrl+C to stop📤 Frame #63 sent, size: 107720 bytes, T2: 8.63ms
+📨 Received: {"type": "request_frame"}...
+🎬 Frame request #64
+📤 Frame #64 sent, size: 107570 bytes, T2: 8.08ms
+
+📊 Capture Status:
+  Frames: 640 | FPS: 26.5
+  Frame size: 1280x720
+  T1 Capture (last): 8.06ms
+  Frame stored successfully in list container
+  T1 Avg (last 10): 8.19ms
+📨 Received: {"type": "request_frame"}...
+🎬 Frame request #65
+📤 Frame #65 sent, size: 107605 bytes, T2: 8.14ms
+📨 Received: {"type": "request_frame"}...
+🎬 Frame request #66
+📤 Frame #66 sent, size: 107804 bytes, T2: 8.15ms
+📨 Received: {"type": "request_frame"}...
+🎬 Frame request #67
+📤 Frame #67 sent, size: 107625 bytes, T2: 8.15ms
+📨 Received: {"type": "request_frame"}...
+🎬 Frame request #68
+📤 Frame #68 sent, size: 107647 bytes, T2: 8.28ms
+📨 Received: {"type": "request_frame"}...
+🎬 Frame request #69
+📤 Frame #69 sent, size: 107731 bytes, T2: 8.34ms
+📨 Received: {"type": "request_frame"}...
+🎬 Frame request #70
+📤 Frame #70 sent, size: 107648 bytes, T2: 8.34ms
+📨 Received: {"type": "request_frame"}...
+🎬 Frame request #71
+📤 Frame #71 sent, size: 107678 bytes, T2: 8.11ms
+📊 Status: Camera: Active | Clients: 1 | Frames: 661 | Press Ctrl+C to stop📨 Received: {"type": "request_frame"}...
+🎬 Frame request #72
+📤 Frame #72 sent, size: 107776 bytes, T2: 8.10ms
+📨 Received: {"type": "request_frame"}...
+🎬 Frame request #73
+📤 Frame #73 sent, size: 107843 bytes, T2: 8.12ms
+📨 Received: {"type": "request_frame"}...
+🎬 Frame request #74
+📤 Frame #74 sent, size: 107930 bytes, T2: 8.24ms
+📨 Received: {"type": "request_frame"}...
+🎬 Frame request #75
+📤 Frame #75 sent, size: 107707 bytes, T2: 8.32ms
+📨 Received: {"type": "request_frame"}...
+🎬 Frame request #76
+📤 Frame #76 sent, size: 107896 bytes, T2: 8.15ms
+📨 Received: {"type": "request_frame"}...
+🎬 Frame request #77
+📤 Frame #77 sent, size: 107849 bytes, T2: 8.10ms
+📨 Received: {"type": "request_frame"}...
+🎬 Frame request #78
+📤 Frame #78 sent, size: 107686 bytes, T2: 8.14ms
+📨 Received: {"type": "request_frame"}...
+🎬 Frame request #79
+📤 Frame #79 sent, size: 107904 bytes, T2: 8.08ms
+📨 Received: {"type": "request_frame"}...
+🎬 Frame request #80
+
+============================================================
+📊 LATENCY METRICS SUMMARY
+============================================================
+No latency data collected yet.
+📊 Status: Camera: Active | Clients: 1 | Frames: 688 | Press Ctrl+C to stop📤 Frame #80 sent, size: 107779 bytes, T2: 8.10ms
+📨 Received: {"type": "request_frame"}...
+🎬 Frame request #81
+📤 Frame #81 sent, size: 107854 bytes, T2: 8.30ms
+
+📊 Capture Status:
+  Frames: 694 | FPS: 26.5
+  Frame size: 1280x720
+  T1 Capture (last): 8.07ms
+  Frame stored successfully in list container
+  T1 Avg (last 10): 8.12ms
+📨 Received: {"type": "request_frame"}...
+🎬 Frame request #82
+📤 Frame #82 sent, size: 107759 bytes, T2: 8.09ms
+📨 Received: {"type": "request_frame"}...
+🎬 Frame request #83
+📤 Frame #83 sent, size: 107601 bytes, T2: 8.15ms
+📨 Received: {"type": "request_frame"}...
+🎬 Frame request #84
+📤 Frame #84 sent, size: 107970 bytes, T2: 8.34ms
+📨 Received: {"type": "request_frame"}...
+🎬 Frame request #85
+📤 Frame #85 sent, size: 107843 bytes, T2: 8.29ms
+📨 Received: {"type": "request_frame"}...
+🎬 Frame request #86
+📤 Frame #86 sent, size: 107599 bytes, T2: 8.38ms
+📨 Received: {"type": "request_frame"}...
+🎬 Frame request #87
+📤 Frame #87 sent, size: 107828 bytes, T2: 8.97ms
+📨 Received: {"type": "request_frame"}...
+🎬 Frame request #88
+📤 Frame #88 sent, size: 107875 bytes, T2: 8.15ms
+📊 Status: Camera: Active | Clients: 1 | Frames: 714 | Press Ctrl+C to stop📨 Received: {"type": "request_frame"}...
+🎬 Frame request #89
+📤 Frame #89 sent, size: 108027 bytes, T2: 8.16ms
+📨 Received: {"type": "request_frame"}...
+🎬 Frame request #90
+📤 Frame #90 sent, size: 107710 bytes, T2: 8.13ms
+📨 Received: {"type": "request_frame"}...
+🎬 Frame request #91
+📤 Frame #91 sent, size: 107854 bytes, T2: 8.36ms
+📨 Received: {"type": "request_frame"}...
+🎬 Frame request #92
+📤 Frame #92 sent, size: 107543 bytes, T2: 11.74ms
+📨 Received: {"type": "request_frame"}...
+🎬 Frame request #93
+📤 Frame #93 sent, size: 107658 bytes, T2: 7.34ms
+📨 Received: {"type": "request_frame"}...
+🎬 Frame request #94
+📤 Frame #94 sent, size: 107752 bytes, T2: 8.09ms
+📨 Received: {"type": "request_frame"}...
+🎬 Frame request #95
+📤 Frame #95 sent, size: 107679 bytes, T2: 8.38ms
+📨 Received: {"type": "request_frame"}...
+🎬 Frame request #96
+📤 Frame #96 sent, size: 107927 bytes, T2: 8.14ms
+📊 Status: Camera: Active | Clients: 1 | Frames: 741 | Press Ctrl+C to stop📨 Received: {"type": "request_frame"}...
+🎬 Frame request #97
+📤 Frame #97 sent, size: 107763 bytes, T2: 8.39ms
+📨 Received: {"type": "request_frame"}...
+🎬 Frame request #98
+📤 Frame #98 sent, size: 107777 bytes, T2: 8.15ms
+
+📊 Capture Status:
+  Frames: 748 | FPS: 26.6
+  Frame size: 1280x720
+  T1 Capture (last): 8.10ms
+  Frame stored successfully in list container
+  T1 Avg (last 10): 8.24ms
+📨 Received: {"type": "request_frame"}...
+🎬 Frame request #99
+📤 Frame #99 sent, size: 107692 bytes, T2: 8.21ms
+📨 Received: {"type": "request_frame"}...
+🎬 Frame request #100
+📤 Frame #100 sent, size: 107692 bytes, T2: 8.09ms
+📨 Received: {"type": "request_frame"}...
+🎬 Frame request #101
+📤 Frame #101 sent, size: 107990 bytes, T2: 8.18ms
+📨 Received: {"type": "request_frame"}...
+🎬 Frame request #102
+📤 Frame #102 sent, size: 107879 bytes, T2: 8.32ms
+📨 Received: {"type": "request_frame"}...
+🎬 Frame request #103
+📤 Frame #103 sent, size: 107874 bytes, T2: 8.59ms
+📨 Received: {"type": "request_frame"}...
+🎬 Frame request #104
+📤 Frame #104 sent, size: 108120 bytes, T2: 8.44ms
+📨 Received: {"type": "request_frame"}...
+🎬 Frame request #105
+📤 Frame #105 sent, size: 107740 bytes, T2: 8.45ms
+📊 Status: Camera: Active | Clients: 1 | Frames: 768 | Press Ctrl+C to stop📨 Received: {"type": "request_frame"}...
+🎬 Frame request #106
+📤 Frame #106 sent, size: 107696 bytes, T2: 8.13ms
+📨 Received: {"type": "request_frame"}...
+🎬 Frame request #107
+📤 Frame #107 sent, size: 107749 bytes, T2: 8.14ms
+📨 Received: {"type": "request_frame"}...
+🎬 Frame request #108
+📤 Frame #108 sent, size: 107756 bytes, T2: 8.16ms
+📨 Received: {"type": "request_frame"}...
+🎬 Frame request #109
+📤 Frame #109 sent, size: 107635 bytes, T2: 7.91ms
+📨 Received: {"type": "request_frame"}...
+🎬 Frame request #110
+📤 Frame #110 sent, size: 107739 bytes, T2: 8.13ms
+📨 Received: {"type": "request_frame"}...
+🎬 Frame request #111
+📤 Frame #111 sent, size: 107691 bytes, T2: 8.29ms
+📨 Received: {"type": "request_frame"}...
+🎬 Frame request #112
+📤 Frame #112 sent, size: 107954 bytes, T2: 8.11ms
+📨 Received: {"type": "request_frame"}...
+🎬 Frame request #113
+📤 Frame #113 sent, size: 107827 bytes, T2: 8.11ms
+📊 Status: Camera: Active | Clients: 1 | Frames: 795 | Press Ctrl+C to stop📨 Received: {"type": "request_frame"}...
+🎬 Frame request #114
+📤 Frame #114 sent, size: 107770 bytes, T2: 7.86ms
+📨 Received: {"type": "request_frame"}...
+🎬 Frame request #115
+📤 Frame #115 sent, size: 107912 bytes, T2: 8.31ms
+📨 Received: {"type": "request_frame"}...
+🎬 Frame request #116
+
+📊 Capture Status:
+  Frames: 802 | FPS: 26.6
+  Frame size: 1280x720
+  T1 Capture (last): 8.53ms
+  Frame stored successfully in list container
+  T1 Avg (last 10): 8.14ms
+📤 Frame #116 sent, size: 107869 bytes, T2: 8.39ms
+📨 Received: {"type": "request_frame"}...
+🎬 Frame request #117
+📤 Frame #117 sent, size: 107785 bytes, T2: 8.24ms
+📨 Received: {"type": "request_frame"}...
+🎬 Frame request #118
+📤 Frame #118 sent, size: 107798 bytes, T2: 7.67ms
+📨 Received: {"type": "request_frame"}...
+🎬 Frame request #119
+📤 Frame #119 sent, size: 107906 bytes, T2: 8.52ms
+📨 Received: {"type": "request_frame"}...
+🎬 Frame request #120
+📤 Frame #120 sent, size: 107815 bytes, T2: 8.12ms
+📨 Received: {"type": "request_frame"}...
+🎬 Frame request #121
+📤 Frame #121 sent, size: 107728 bytes, T2: 8.27ms
+📨 Received: {"type": "request_frame"}...
+🎬 Frame request #122
+📤 Frame #122 sent, size: 107913 bytes, T2: 8.14ms
+📊 Status: Camera: Active | Clients: 1 | Frames: 822 | Press Ctrl+C to stop📨 Received: {"type": "request_frame"}...
+🎬 Frame request #123
+📤 Frame #123 sent, size: 107642 bytes, T2: 8.58ms
+📨 Received: {"type": "request_frame"}...
+🎬 Frame request #124
+📤 Frame #124 sent, size: 107922 bytes, T2: 8.28ms
+📨 Received: {"type": "request_frame"}...
+🎬 Frame request #125
+📤 Frame #125 sent, size: 108018 bytes, T2: 8.39ms
+📨 Received: {"type": "request_frame"}...
+🎬 Frame request #126
+📤 Frame #126 sent, size: 107766 bytes, T2: 8.10ms
+📨 Received: {"type": "request_frame"}...
+🎬 Frame request #127
+📤 Frame #127 sent, size: 107804 bytes, T2: 8.12ms
+📨 Received: {"type": "request_frame"}...
+🎬 Frame request #128
+📤 Frame #128 sent, size: 107770 bytes, T2: 8.41ms
+📨 Received: {"type": "request_frame"}...
+🎬 Frame request #129
+📤 Frame #129 sent, size: 107902 bytes, T2: 8.12ms
+📨 Received: {"type": "request_frame"}...
+🎬 Frame request #130
+📤 Frame #130 sent, size: 107735 bytes, T2: 8.18ms
+📊 Status: Camera: Active | Clients: 1 | Frames: 849 | Press Ctrl+C to stop📨 Received: {"type": "request_frame"}...
+🎬 Frame request #131
+📤 Frame #131 sent, size: 107762 bytes, T2: 8.30ms
+📨 Received: {"type": "request_frame"}...
+🎬 Frame request #132
+📤 Frame #132 sent, size: 107599 bytes, T2: 8.30ms
+
+📊 Capture Status:
+  Frames: 856 | FPS: 26.6
+  Frame size: 1280x720
+  T1 Capture (last): 8.14ms
+  Frame stored successfully in list container
+  T1 Avg (last 10): 8.29ms
+📨 Received: {"type": "request_frame"}...
+🎬 Frame request #133
+📤 Frame #133 sent, size: 107713 bytes, T2: 8.13ms
+📨 Received: {"type": "request_frame"}...
+🎬 Frame request #134
+📤 Frame #134 sent, size: 107759 bytes, T2: 8.13ms
+📨 Received: {"type": "request_frame"}...
+🎬 Frame request #135
+📤 Frame #135 sent, size: 107722 bytes, T2: 8.15ms
+📨 Received: {"type": "request_frame"}...
+🎬 Frame request #136
+📤 Frame #136 sent, size: 107647 bytes, T2: 8.15ms
+📨 Received: {"type": "request_frame"}...
+🎬 Frame request #137
+📤 Frame #137 sent, size: 107823 bytes, T2: 8.41ms
+📨 Received: {"type": "request_frame"}...
+🎬 Frame request #138
+📤 Frame #138 sent, size: 107817 bytes, T2: 8.11ms
+📨 Received: {"type": "request_frame"}...
+🎬 Frame request #139
+📊 Status: Camera: Active | Clients: 1 | Frames: 875 | Press Ctrl+C to stop📤 Frame #139 sent, size: 107834 bytes, T2: 8.32ms
+📨 Received: {"type": "request_frame"}...
+🎬 Frame request #140
+📤 Frame #140 sent, size: 107745 bytes, T2: 8.09ms
+📨 Received: {"type": "request_frame"}...
+🎬 Frame request #141
+📤 Frame #141 sent, size: 107808 bytes, T2: 8.18ms
+📨 Received: {"type": "request_frame"}...
+🎬 Frame request #142
+📤 Frame #142 sent, size: 107718 bytes, T2: 12.15ms
+📨 Received: {"type": "request_frame"}...
+🎬 Frame request #143
+📤 Frame #143 sent, size: 107792 bytes, T2: 8.14ms
+📨 Received: {"type": "request_frame"}...
+🎬 Frame request #144
+📤 Frame #144 sent, size: 107815 bytes, T2: 8.13ms
+📨 Received: {"type": "request_frame"}...
+🎬 Frame request #145
+📤 Frame #145 sent, size: 107900 bytes, T2: 8.41ms
+📨 Received: {"type": "request_frame"}...
+🎬 Frame request #146
+📤 Frame #146 sent, size: 107681 bytes, T2: 8.11ms
+📨 Received: {"type": "request_frame"}...
+🎬 Frame request #147
+📤 Frame #147 sent, size: 107762 bytes, T2: 8.42ms
+📊 Status: Camera: Active | Clients: 1 | Frames: 902 | Press Ctrl+C to stop📨 Received: {"type": "request_frame"}...
+🎬 Frame request #148
+📤 Frame #148 sent, size: 107796 bytes, T2: 9.26ms
+📨 Received: {"type": "request_frame"}...
+🎬 Frame request #149
+📤 Frame #149 sent, size: 107770 bytes, T2: 7.72ms
+
+📊 Capture Status:
+  Frames: 910 | FPS: 26.6
+  Frame size: 1280x720
+  T1 Capture (last): 8.09ms
+  Frame stored successfully in list container
+  T1 Avg (last 10): 8.11ms
+📨 Received: {"type": "request_frame"}...
+🎬 Frame request #150
+📤 Frame #150 sent, size: 107787 bytes, T2: 8.16ms
+📨 Received: {"type": "request_frame"}...
+🎬 Frame request #151
+📤 Frame #151 sent, size: 107799 bytes, T2: 10.50ms
+📨 Received: {"type": "request_frame"}...
+🎬 Frame request #152
+📤 Frame #152 sent, size: 107866 bytes, T2: 7.61ms
+📨 Received: {"type": "request_frame"}...
+🎬 Frame request #153
+📤 Frame #153 sent, size: 107967 bytes, T2: 8.78ms
+📨 Received: {"type": "request_frame"}...
+🎬 Frame request #154
+📤 Frame #154 sent, size: 107895 bytes, T2: 7.78ms
+📨 Received: {"type": "request_frame"}...
+🎬 Frame request #155
+📤 Frame #155 sent, size: 107896 bytes, T2: 8.21ms
+📨 Received: {"type": "request_frame"}...
+🎬 Frame request #156
+📊 Status: Camera: Active | Clients: 1 | Frames: 929 | Press Ctrl+C to stop📤 Frame #156 sent, size: 107910 bytes, T2: 8.19ms
+📨 Received: {"type": "request_frame"}...
+🎬 Frame request #157
+📤 Frame #157 sent, size: 107787 bytes, T2: 8.19ms
+📨 Received: {"type": "request_frame"}...
+🎬 Frame request #158
+📤 Frame #158 sent, size: 107861 bytes, T2: 8.22ms
+📨 Received: {"type": "request_frame"}...
+🎬 Frame request #159
+📤 Frame #159 sent, size: 107849 bytes, T2: 8.39ms
+📨 Received: {"type": "request_frame"}...
+🎬 Frame request #160
+📤 Frame #160 sent, size: 107783 bytes, T2: 8.13ms
+📨 Received: {"type": "request_frame"}...
+🎬 Frame request #161
+📤 Frame #161 sent, size: 107899 bytes, T2: 8.41ms
+📨 Received: {"type": "request_frame"}...
+🎬 Frame request #162
+📤 Frame #162 sent, size: 107914 bytes, T2: 8.80ms
+📨 Received: {"type": "request_frame"}...
+🎬 Frame request #163
+📤 Frame #163 sent, size: 107945 bytes, T2: 8.13ms
+📨 Received: {"type": "request_frame"}...
+🎬 Frame request #164
+
+============================================================
+📊 LATENCY METRICS SUMMARY
+============================================================
+No latency data collected yet.
+📊 Status: Camera: Active | Clients: 1 | Frames: 956 | Press Ctrl+C to stop📤 Frame #164 sent, size: 107793 bytes, T2: 8.11ms
+📨 Received: {"type": "request_frame"}...
+🎬 Frame request #165
+📤 Frame #165 sent, size: 107729 bytes, T2: 8.39ms
+📨 Received: {"type": "request_frame"}...
+🎬 Frame request #166
+📤 Frame #166 sent, size: 107688 bytes, T2: 8.15ms
+
+📊 Capture Status:
+  Frames: 964 | FPS: 26.6
+  Frame size: 1280x720
+  T1 Capture (last): 8.18ms
+  Frame stored successfully in list container
+  T1 Avg (last 10): 8.09ms
+📨 Received: {"type": "request_frame"}...
+🎬 Frame request #167
+📤 Frame #167 sent, size: 107770 bytes, T2: 8.44ms
+📨 Received: {"type": "request_frame"}...
+🎬 Frame request #168
+📤 Frame #168 sent, size: 107817 bytes, T2: 8.14ms
+📨 Received: {"type": "request_frame"}...
+🎬 Frame request #169
+📤 Frame #169 sent, size: 107750 bytes, T2: 8.13ms
+📨 Received: {"type": "request_frame"}...
+🎬 Frame request #170
+📤 Frame #170 sent, size: 107781 bytes, T2: 8.08ms
+📨 Received: {"type": "request_frame"}...
+🎬 Frame request #171
+📤 Frame #171 sent, size: 108009 bytes, T2: 8.29ms
+📨 Received: {"type": "request_frame"}...
+🎬 Frame request #172
+📤 Frame #172 sent, size: 107939 bytes, T2: 8.32ms
+📊 Status: Camera: Active | Clients: 1 | Frames: 983 | Press Ctrl+C to stop📨 Received: {"type": "request_frame"}...
+🎬 Frame request #173
+📤 Frame #173 sent, size: 107965 bytes, T2: 8.10ms
+📨 Received: {"type": "request_frame"}...
+🎬 Frame request #174
+📤 Frame #174 sent, size: 107925 bytes, T2: 8.16ms
+📨 Received: {"type": "request_frame"}...
+🎬 Frame request #175
+📤 Frame #175 sent, size: 107810 bytes, T2: 9.80ms
+📨 Received: {"type": "request_frame"}...
+🎬 Frame request #176
+📤 Frame #176 sent, size: 107799 bytes, T2: 7.98ms
+📨 Received: {"type": "request_frame"}...
+🎬 Frame request #177
+📤 Frame #177 sent, size: 108094 bytes, T2: 8.11ms
+📨 Received: {"type": "request_frame"}...
+🎬 Frame request #178
+📤 Frame #178 sent, size: 108113 bytes, T2: 8.14ms
+📨 Received: {"type": "request_frame"}...
+🎬 Frame request #179
+📤 Frame #179 sent, size: 107985 bytes, T2: 8.15ms
+📨 Received: {"type": "request_frame"}...
+🎬 Frame request #180
+📤 Frame #180 sent, size: 107845 bytes, T2: 8.36ms
+📊 Status: Camera: Active | Clients: 1 | Frames: 1010 | Press Ctrl+C to stop📨 Received: {"type": "request_frame"}...
+🎬 Frame request #181
+📤 Frame #181 sent, size: 107899 bytes, T2: 8.09ms
+📨 Received: {"type": "request_frame"}...
+🎬 Frame request #182
+📤 Frame #182 sent, size: 107650 bytes, T2: 8.08ms
+📨 Received: {"type": "request_frame"}...
+🎬 Frame request #183
+
+📊 Capture Status:
+  Frames: 1018 | FPS: 26.6
+  Frame size: 1280x720
+  T1 Capture (last): 8.06ms
+  Frame stored successfully in list container
+  T1 Avg (last 10): 8.20ms
+📤 Frame #183 sent, size: 107780 bytes, T2: 8.18ms
+📨 Received: {"type": "request_frame"}...
+🎬 Frame request #184
+📤 Frame #184 sent, size: 107869 bytes, T2: 8.11ms
+📨 Received: {"type": "request_frame"}...
+🎬 Frame request #185
+📤 Frame #185 sent, size: 107883 bytes, T2: 8.31ms
+📨 Received: {"type": "request_frame"}...
+🎬 Frame request #186
+📤 Frame #186 sent, size: 107744 bytes, T2: 9.24ms
+📨 Received: {"type": "request_frame"}...
+🎬 Frame request #187
+📤 Frame #187 sent, size: 107811 bytes, T2: 8.10ms
+📨 Received: {"type": "request_frame"}...
+🎬 Frame request #188
+📤 Frame #188 sent, size: 107760 bytes, T2: 9.25ms
+📨 Received: {"type": "request_frame"}...
+🎬 Frame request #189
+📊 Status: Camera: Active | Clients: 1 | Frames: 1036 | Press Ctrl+C to stop📤 Frame #189 sent, size: 107757 bytes, T2: 7.73ms
+📨 Received: {"type": "request_frame"}...
+🎬 Frame request #190
+📤 Frame #190 sent, size: 107814 bytes, T2: 8.26ms
+📨 Received: {"type": "request_frame"}...
+🎬 Frame request #191
+📤 Frame #191 sent, size: 107815 bytes, T2: 8.10ms
+📨 Received: {"type": "request_frame"}...
+🎬 Frame request #192
+📤 Frame #192 sent, size: 107893 bytes, T2: 8.04ms
+📨 Received: {"type": "request_frame"}...
+🎬 Frame request #193
+📤 Frame #193 sent, size: 107751 bytes, T2: 8.07ms
+📨 Received: {"type": "request_frame"}...
+🎬 Frame request #194
+📤 Frame #194 sent, size: 107876 bytes, T2: 8.13ms
+📨 Received: {"type": "request_frame"}...
+🎬 Frame request #195
+📤 Frame #195 sent, size: 107800 bytes, T2: 8.32ms
+📨 Received: {"type": "request_frame"}...
+🎬 Frame request #196
+📤 Frame #196 sent, size: 108032 bytes, T2: 8.32ms
+📨 Received: {"type": "request_frame"}...
+🎬 Frame request #197
+📤 Frame #197 sent, size: 107783 bytes, T2: 8.05ms
+📊 Status: Camera: Active | Clients: 1 | Frames: 1063 | Press Ctrl+C to stop📨 Received: {"type": "request_frame"}...
+🎬 Frame request #198
+📤 Frame #198 sent, size: 107704 bytes, T2: 8.10ms
+📨 Received: {"type": "request_frame"}...
+🎬 Frame request #199
+📤 Frame #199 sent, size: 107896 bytes, T2: 8.34ms
+📨 Received: {"type": "request_frame"}...
+🎬 Frame request #200
+
+📊 Capture Status:
+  Frames: 1072 | FPS: 26.6
+  Frame size: 1280x720
+  T1 Capture (last): 8.16ms
+  Frame stored successfully in list container
+  T1 Avg (last 10): 8.18ms
+📤 Frame #200 sent, size: 107936 bytes, T2: 8.14ms
+📨 Received: {"type": "request_frame"}...
+🎬 Frame request #201
+📤 Frame #201 sent, size: 107877 bytes, T2: 8.10ms
+📨 Received: {"type": "request_frame"}...
+🎬 Frame request #202
+📤 Frame #202 sent, size: 107668 bytes, T2: 8.28ms
+📨 Received: {"type": "request_frame"}...
+🎬 Frame request #203
+📤 Frame #203 sent, size: 107721 bytes, T2: 8.07ms
+📨 Received: {"type": "request_frame"}...
+🎬 Frame request #204
+📤 Frame #204 sent, size: 107876 bytes, T2: 8.10ms
+📨 Received: {"type": "request_frame"}...
+🎬 Frame request #205
+📤 Frame #205 sent, size: 107988 bytes, T2: 8.12ms
+📨 Received: {"type": "request_frame"}...
+🎬 Frame request #206
+📊 Status: Camera: Active | Clients: 1 | Frames: 1090 | Press Ctrl+C to stop📤 Frame #206 sent, size: 107720 bytes, T2: 8.00ms
+📨 Received: {"type": "request_frame"}...
+🎬 Frame request #207
+📤 Frame #207 sent, size: 107852 bytes, T2: 8.31ms
+📨 Received: {"type": "request_frame"}...
+🎬 Frame request #208
+📤 Frame #208 sent, size: 107745 bytes, T2: 9.09ms
+📨 Received: {"type": "request_frame"}...
+🎬 Frame request #209
+📤 Frame #209 sent, size: 107896 bytes, T2: 7.83ms
+📨 Received: {"type": "request_frame"}...
+🎬 Frame request #210
+📤 Frame #210 sent, size: 107994 bytes, T2: 7.89ms
+📨 Received: {"type": "request_frame"}...
+🎬 Frame request #211
+📤 Frame #211 sent, size: 108358 bytes, T2: 8.86ms
+📨 Received: {"type": "request_frame"}...
+🎬 Frame request #212
+📤 Frame #212 sent, size: 107994 bytes, T2: 8.06ms
+📨 Received: {"type": "request_frame"}...
+🎬 Frame request #213
+📤 Frame #213 sent, size: 108187 bytes, T2: 7.41ms
+📨 Received: {"type": "request_frame"}...
+🎬 Frame request #214
+📤 Frame #214 sent, size: 107619 bytes, T2: 8.12ms
+📊 Status: Camera: Active | Clients: 1 | Frames: 1117 | Press Ctrl+C to stop📨 Received: {"type": "request_frame"}...
+🎬 Frame request #215
+📤 Frame #215 sent, size: 107487 bytes, T2: 8.22ms
+📨 Received: {"type": "request_frame"}...
+🎬 Frame request #216
+📤 Frame #216 sent, size: 108245 bytes, T2: 8.78ms
+📨 Received: {"type": "request_frame"}...
+🎬 Frame request #217
+📤 Frame #217 sent, size: 108529 bytes, T2: 8.14ms
+
+📊 Capture Status:
+  Frames: 1126 | FPS: 26.6
+  Frame size: 1280x720
+  T1 Capture (last): 9.03ms
+  Frame stored successfully in list container
+  T1 Avg (last 10): 8.25ms
+📨 Received: {"type": "request_frame"}...
+🎬 Frame request #218
+📤 Frame #218 sent, size: 107322 bytes, T2: 8.10ms
+📨 Received: {"type": "request_frame"}...
+🎬 Frame request #219
+📤 Frame #219 sent, size: 108018 bytes, T2: 8.07ms
+📨 Received: {"type": "request_frame"}...
+🎬 Frame request #220
+📤 Frame #220 sent, size: 107355 bytes, T2: 8.13ms
+📨 Received: {"type": "request_frame"}...
+🎬 Frame request #221
+📤 Frame #221 sent, size: 105529 bytes, T2: 8.26ms
+📨 Received: {"type": "request_frame"}...
+🎬 Frame request #222
+📤 Frame #222 sent, size: 101198 bytes, T2: 8.08ms
+📨 Received: {"type": "request_frame"}...
+🎬 Frame request #223
+📊 Status: Camera: Active | Clients: 1 | Frames: 1144 | Press Ctrl+C to stop📤 Frame #223 sent, size: 101272 bytes, T2: 8.07ms
+📨 Received: {"type": "request_frame"}...
+🎬 Frame request #224
+📤 Frame #224 sent, size: 94031 bytes, T2: 7.97ms
+📨 Received: {"type": "request_frame"}...
+🎬 Frame request #225
+📤 Frame #225 sent, size: 100235 bytes, T2: 8.35ms
+📨 Received: {"type": "request_frame"}...
+🎬 Frame request #226
+📤 Frame #226 sent, size: 107789 bytes, T2: 8.12ms
+📨 Received: {"type": "request_frame"}...
+🎬 Frame request #227
+📤 Frame #227 sent, size: 107778 bytes, T2: 8.11ms
+📨 Received: {"type": "request_frame"}...
+🎬 Frame request #228
+📤 Frame #228 sent, size: 107875 bytes, T2: 8.11ms
+📨 Received: {"type": "request_frame"}...
+🎬 Frame request #229
+📤 Frame #229 sent, size: 107853 bytes, T2: 8.13ms
+📨 Received: {"type": "request_frame"}...
+🎬 Frame request #230
+📤 Frame #230 sent, size: 107792 bytes, T2: 8.09ms
+📨 Received: {"type": "request_frame"}...
+🎬 Frame request #231
+📤 Frame #231 sent, size: 108062 bytes, T2: 8.09ms
+📊 Status: Camera: Active | Clients: 1 | Frames: 1171 | Press Ctrl+C to stop📨 Received: {"type": "request_frame"}...
+🎬 Frame request #232
+📤 Frame #232 sent, size: 108313 bytes, T2: 8.26ms
+📨 Received: {"type": "request_frame"}...
+🎬 Frame request #233
+📤 Frame #233 sent, size: 108393 bytes, T2: 8.38ms
+📨 Received: {"type": "request_frame"}...
+🎬 Frame request #234
+
+📊 Capture Status:
+  Frames: 1180 | FPS: 26.7
+  Frame size: 1280x720
+  T1 Capture (last): 8.10ms
+  Frame stored successfully in list container
+  T1 Avg (last 10): 8.16ms
+📤 Frame #234 sent, size: 108098 bytes, T2: 8.20ms
+📨 Received: {"type": "request_frame"}...
+🎬 Frame request #235
+📤 Frame #235 sent, size: 107997 bytes, T2: 8.21ms
+📨 Received: {"type": "request_frame"}...
+🎬 Frame request #236
+📤 Frame #236 sent, size: 108424 bytes, T2: 8.36ms
+📨 Received: {"type": "request_frame"}...
+🎬 Frame request #237
+📤 Frame #237 sent, size: 107978 bytes, T2: 8.05ms
+📨 Received: {"type": "request_frame"}...
+🎬 Frame request #238
+📤 Frame #238 sent, size: 107795 bytes, T2: 8.13ms
+📨 Received: {"type": "request_frame"}...
+🎬 Frame request #239
+📤 Frame #239 sent, size: 107819 bytes, T2: 8.13ms
+📊 Status: Camera: Active | Clients: 1 | Frames: 1198 | Press Ctrl+C to stop📨 Received: {"type": "request_frame"}...
+🎬 Frame request #240
+📤 Frame #240 sent, size: 107738 bytes, T2: 8.24ms
+📨 Received: {"type": "request_frame"}...
+🎬 Frame request #241
+📤 Frame #241 sent, size: 107815 bytes, T2: 7.68ms
+📨 Received: {"type": "request_frame"}...
+🎬 Frame request #242
+📤 Frame #242 sent, size: 107425 bytes, T2: 8.04ms
+📨 Received: {"type": "request_frame"}...
+🎬 Frame request #243
+📤 Frame #243 sent, size: 107206 bytes, T2: 8.26ms
+📨 Received: {"type": "request_frame"}...
+🎬 Frame request #244
+📤 Frame #244 sent, size: 107202 bytes, T2: 8.93ms
+📨 Received: {"type": "request_frame"}...
+🎬 Frame request #245
+📤 Frame #245 sent, size: 88756 bytes, T2: 7.94ms
+📨 Received: {"type": "request_frame"}...
+🎬 Frame request #246
+📤 Frame #246 sent, size: 75197 bytes, T2: 7.76ms
+📨 Received: {"type": "request_frame"}...
+🎬 Frame request #247
+📤 Frame #247 sent, size: 66866 bytes, T2: 7.69ms
+📨 Received: {"type": "request_frame"}...
+🎬 Frame request #248
+📤 Frame #248 sent, size: 60451 bytes, T2: 7.55ms
+
+============================================================
+📊 LATENCY METRICS SUMMARY
+============================================================
+No latency data collected yet.
+📊 Status: Camera: Active | Clients: 1 | Frames: 1225 | Press Ctrl+C to stop📨 Received: {"type": "request_frame"}...
+🎬 Frame request #249
+📤 Frame #249 sent, size: 50812 bytes, T2: 7.50ms
+📨 Received: {"type": "request_frame"}...
+🎬 Frame request #250
+📤 Frame #250 sent, size: 49522 bytes, T2: 7.56ms
+📨 Received: {"type": "request_frame"}...
+🎬 Frame request #251
+📤 Frame #251 sent, size: 50447 bytes, T2: 7.49ms
+
+📊 Capture Status:
+  Frames: 1235 | FPS: 26.7
+  Frame size: 1280x720
+  T1 Capture (last): 6.83ms
+  Frame stored successfully in list container
+  T1 Avg (last 10): 6.84ms
+📨 Received: {"type": "request_frame"}...
+🎬 Frame request #252
+📤 Frame #252 sent, size: 51097 bytes, T2: 7.45ms
+📨 Received: {"type": "request_frame"}...
+🎬 Frame request #253
+📤 Frame #253 sent, size: 57386 bytes, T2: 7.56ms
+📨 Received: {"type": "request_frame"}...
+🎬 Frame request #254
+📤 Frame #254 sent, size: 63942 bytes, T2: 7.60ms
+📨 Received: {"type": "request_frame"}...
+🎬 Frame request #255
+📤 Frame #255 sent, size: 63478 bytes, T2: 7.62ms
+📨 Received: {"type": "request_frame"}...
+🎬 Frame request #256
+📤 Frame #256 sent, size: 72392 bytes, T2: 7.74ms
+📨 Received: {"type": "request_frame"}...
+🎬 Frame request #257
+📤 Frame #257 sent, size: 93856 bytes, T2: 8.06ms
+📊 Status: Camera: Active | Clients: 1 | Frames: 1253 | Press Ctrl+C to stop📨 Received: {"type": "request_frame"}...
+🎬 Frame request #258
+📤 Frame #258 sent, size: 97121 bytes, T2: 7.98ms
+📨 Received: {"type": "request_frame"}...
+🎬 Frame request #259
+📤 Frame #259 sent, size: 99454 bytes, T2: 8.01ms
+📨 Received: {"type": "request_frame"}...
+🎬 Frame request #260
+📤 Frame #260 sent, size: 100859 bytes, T2: 8.04ms
+📨 Received: {"type": "request_frame"}...
+🎬 Frame request #261
+📤 Frame #261 sent, size: 101591 bytes, T2: 8.04ms
+📨 Received: {"type": "request_frame"}...
+🎬 Frame request #262
+📤 Frame #262 sent, size: 106256 bytes, T2: 8.56ms
+📨 Received: {"type": "request_frame"}...
+🎬 Frame request #263
+📤 Frame #263 sent, size: 107114 bytes, T2: 7.72ms
+📨 Received: {"type": "request_frame"}...
+🎬 Frame request #264
+📤 Frame #264 sent, size: 107613 bytes, T2: 8.37ms
+📨 Received: {"type": "request_frame"}...
+🎬 Frame request #265
+📤 Frame #265 sent, size: 105182 bytes, T2: 7.68ms
+📨 Received: {"type": "request_frame"}...
+🎬 Frame request #266
+📊 Status: Camera: Active | Clients: 1 | Frames: 1279 | Press Ctrl+C to stop📤 Frame #266 sent, size: 104595 bytes, T2: 7.69ms
+📨 Received: {"type": "request_frame"}...
+🎬 Frame request #267
+📤 Frame #267 sent, size: 103636 bytes, T2: 8.17ms
+📨 Received: {"type": "request_frame"}...
+🎬 Frame request #268
+📤 Frame #268 sent, size: 100318 bytes, T2: 8.35ms
+📨 Received: {"type": "request_frame"}...
+🎬 Frame request #269
+📤 Frame #269 sent, size: 99140 bytes, T2: 8.02ms
+
+📊 Capture Status:
+  Frames: 1290 | FPS: 26.7
+  Frame size: 1280x720
+  T1 Capture (last): 7.82ms
+  Frame stored successfully in list container
+  T1 Avg (last 10): 8.01ms
+📨 Received: {"type": "request_frame"}...
+🎬 Frame request #270
+📤 Frame #270 sent, size: 99117 bytes, T2: 8.01ms
+📨 Received: {"type": "request_frame"}...
+🎬 Frame request #271
+📤 Frame #271 sent, size: 101486 bytes, T2: 8.06ms
+📨 Received: {"type": "request_frame"}...
+🎬 Frame request #272
+📤 Frame #272 sent, size: 103670 bytes, T2: 8.09ms
+📨 Received: {"type": "request_frame"}...
+🎬 Frame request #273
+📤 Frame #273 sent, size: 104501 bytes, T2: 8.30ms
+📨 Received: {"type": "request_frame"}...
+🎬 Frame request #274
+📤 Frame #274 sent, size: 104535 bytes, T2: 8.14ms
+📊 Status: Camera: Active | Clients: 1 | Frames: 1306 | Press Ctrl+C to stop📨 Received: {"type": "request_frame"}...
+🎬 Frame request #275
+📤 Frame #275 sent, size: 101631 bytes, T2: 8.07ms
+📨 Received: {"type": "request_frame"}...
+🎬 Frame request #276
+📤 Frame #276 sent, size: 102541 bytes, T2: 8.09ms
+📨 Received: {"type": "request_frame"}...
+🎬 Frame request #277
+📤 Frame #277 sent, size: 108941 bytes, T2: 8.14ms
+📨 Received: {"type": "request_frame"}...
+🎬 Frame request #278
+📤 Frame #278 sent, size: 108805 bytes, T2: 8.15ms
+📨 Received: {"type": "request_frame"}...
+🎬 Frame request #279
+📤 Frame #279 sent, size: 84183 bytes, T2: 8.14ms
+📨 Received: {"type": "request_frame"}...
+🎬 Frame request #280
+📤 Frame #280 sent, size: 71452 bytes, T2: 7.74ms
+📨 Received: {"type": "request_frame"}...
+🎬 Frame request #281
+📤 Frame #281 sent, size: 70684 bytes, T2: 7.79ms
+📨 Received: {"type": "request_frame"}...
+🎬 Frame request #282
+📤 Frame #282 sent, size: 61719 bytes, T2: 7.65ms
+📨 Received: {"type": "request_frame"}...
+🎬 Frame request #283
+📤 Frame #283 sent, size: 59233 bytes, T2: 7.58ms
+📊 Status: Camera: Active | Clients: 1 | Frames: 1334 | Press Ctrl+C to stop📨 Received: {"type": "request_frame"}...
+🎬 Frame request #284
+📤 Frame #284 sent, size: 65832 bytes, T2: 7.70ms
+📨 Received: {"type": "request_frame"}...
+🎬 Frame request #285
+📤 Frame #285 sent, size: 64887 bytes, T2: 7.69ms
+📨 Received: {"type": "request_frame"}...
+🎬 Frame request #286
+📤 Frame #286 sent, size: 66719 bytes, T2: 7.73ms
+
+📊 Capture Status:
+  Frames: 1345 | FPS: 26.7
+  Frame size: 1280x720
+  T1 Capture (last): 6.92ms
+  Frame stored successfully in list container
+  T1 Avg (last 10): 6.96ms
+📨 Received: {"type": "request_frame"}...
+🎬 Frame request #287
+📤 Frame #287 sent, size: 62455 bytes, T2: 7.70ms
+📨 Received: {"type": "request_frame"}...
+🎬 Frame request #288
+📤 Frame #288 sent, size: 68473 bytes, T2: 7.76ms
+📨 Received: {"type": "request_frame"}...
+🎬 Frame request #289
+📤 Frame #289 sent, size: 89092 bytes, T2: 7.96ms
+📨 Received: {"type": "request_frame"}...
+🎬 Frame request #290
+📤 Frame #290 sent, size: 96107 bytes, T2: 8.04ms
+📨 Received: {"type": "request_frame"}...
+🎬 Frame request #291
+📤 Frame #291 sent, size: 98284 bytes, T2: 8.06ms
+📨 Received: {"type": "request_frame"}...
+🎬 Frame request #292
+📤 Frame #292 sent, size: 99734 bytes, T2: 8.08ms
+📊 Status: Camera: Active | Clients: 1 | Frames: 1361 | Press Ctrl+C to stop📨 Received: {"type": "request_frame"}...
+🎬 Frame request #293
+📤 Frame #293 sent, size: 99890 bytes, T2: 8.31ms
+📨 Received: {"type": "request_frame"}...
+🎬 Frame request #294
+📤 Frame #294 sent, size: 100213 bytes, T2: 8.11ms
+📨 Received: {"type": "request_frame"}...
+🎬 Frame request #295
+📤 Frame #295 sent, size: 100426 bytes, T2: 8.20ms
+📨 Received: {"type": "request_frame"}...
+🎬 Frame request #296
+📤 Frame #296 sent, size: 101055 bytes, T2: 8.11ms
+📨 Received: {"type": "request_frame"}...
+🎬 Frame request #297
+📤 Frame #297 sent, size: 101628 bytes, T2: 8.11ms
+📨 Received: {"type": "request_frame"}...
+🎬 Frame request #298
+📤 Frame #298 sent, size: 101826 bytes, T2: 8.10ms
+📨 Received: {"type": "request_frame"}...
+🎬 Frame request #299
+📤 Frame #299 sent, size: 101743 bytes, T2: 8.37ms
+📨 Received: {"type": "request_frame"}...
+🎬 Frame request #300
+📤 Frame #300 sent, size: 100066 bytes, T2: 8.63ms
+📊 Status: Camera: Active | Clients: 1 | Frames: 1388 | Press Ctrl+C to stop📨 Received: {"type": "request_frame"}...
+🎬 Frame request #301
+📤 Frame #301 sent, size: 96315 bytes, T2: 8.04ms
+📨 Received: {"type": "request_frame"}...
+🎬 Frame request #302
+📤 Frame #302 sent, size: 97114 bytes, T2: 8.03ms
+📨 Received: {"type": "request_frame"}...
+🎬 Frame request #303
+📤 Frame #303 sent, size: 99360 bytes, T2: 8.09ms
+📨 Received: {"type": "request_frame"}...
+🎬 Frame request #304
+📤 Frame #304 sent, size: 98784 bytes, T2: 8.04ms
+
+📊 Capture Status:
+  Frames: 1400 | FPS: 26.7
+  Frame size: 1280x720
+  T1 Capture (last): 7.72ms
+  Frame stored successfully in list container
+  T1 Avg (last 10): 7.78ms
+📨 Received: {"type": "request_frame"}...
+🎬 Frame request #305
+📤 Frame #305 sent, size: 100199 bytes, T2: 8.21ms
+📨 Received: {"type": "request_frame"}...
+🎬 Frame request #306
+📤 Frame #306 sent, size: 101767 bytes, T2: 8.31ms
+📨 Received: {"type": "request_frame"}...
+🎬 Frame request #307
+📤 Frame #307 sent, size: 102404 bytes, T2: 8.08ms
+📨 Received: {"type": "request_frame"}...
+🎬 Frame request #308
+📤 Frame #308 sent, size: 104126 bytes, T2: 8.09ms
+📨 Received: {"type": "request_frame"}...
+🎬 Frame request #309
+📤 Frame #309 sent, size: 102704 bytes, T2: 8.32ms
+📊 Status: Camera: Active | Clients: 1 | Frames: 1415 | Press Ctrl+C to stop📨 Received: {"type": "request_frame"}...
+🎬 Frame request #310
+📤 Frame #310 sent, size: 98758 bytes, T2: 8.03ms
+📨 Received: {"type": "request_frame"}...
+🎬 Frame request #311
+📤 Frame #311 sent, size: 98980 bytes, T2: 8.14ms
+📨 Received: {"type": "request_frame"}...
+🎬 Frame request #312
+📤 Frame #312 sent, size: 99456 bytes, T2: 8.69ms
+📨 Received: {"type": "request_frame"}...
+🎬 Frame request #313
+📤 Frame #313 sent, size: 101442 bytes, T2: 8.05ms
+📨 Received: {"type": "request_frame"}...
+🎬 Frame request #314
+📤 Frame #314 sent, size: 104104 bytes, T2: 8.12ms
+📨 Received: {"type": "request_frame"}...
+🎬 Frame request #315
+📤 Frame #315 sent, size: 104220 bytes, T2: 8.07ms
+📨 Received: {"type": "request_frame"}...
+🎬 Frame request #316
+📤 Frame #316 sent, size: 101827 bytes, T2: 8.12ms
+📨 Received: {"type": "request_frame"}...
+🎬 Frame request #317
+📤 Frame #317 sent, size: 96331 bytes, T2: 8.22ms
+📨 Received: {"type": "request_frame"}...
+🎬 Frame request #318
+📊 Status: Camera: Active | Clients: 1 | Frames: 1443 | Press Ctrl+C to stop📤 Frame #318 sent, size: 99085 bytes, T2: 8.33ms
+📨 Received: {"type": "request_frame"}...
+🎬 Frame request #319
+📤 Frame #319 sent, size: 100569 bytes, T2: 8.09ms
+📨 Received: {"type": "request_frame"}...
+🎬 Frame request #320
+📤 Frame #320 sent, size: 101203 bytes, T2: 8.10ms
+📨 Received: {"type": "request_frame"}...
+🎬 Frame request #321
+📤 Frame #321 sent, size: 93583 bytes, T2: 7.99ms
+
+📊 Capture Status:
+  Frames: 1455 | FPS: 26.8
+  Frame size: 1280x720
+  T1 Capture (last): 8.11ms
+  Frame stored successfully in list container
+  T1 Avg (last 10): 7.92ms
+📨 Received: {"type": "request_frame"}...
+🎬 Frame request #322
+📤 Frame #322 sent, size: 101508 bytes, T2: 7.60ms
+📨 Received: {"type": "request_frame"}...
+🎬 Frame request #323
+📤 Frame #323 sent, size: 103135 bytes, T2: 8.31ms
+📨 Received: {"type": "request_frame"}...
+🎬 Frame request #324
+📤 Frame #324 sent, size: 103842 bytes, T2: 10.79ms
+📨 Received: {"type": "request_frame"}...
+🎬 Frame request #325
+📤 Frame #325 sent, size: 103853 bytes, T2: 8.24ms
+📨 Received: {"type": "request_frame"}...
+🎬 Frame request #326
+📤 Frame #326 sent, size: 103825 bytes, T2: 8.13ms
+📊 Status: Camera: Active | Clients: 1 | Frames: 1470 | Press Ctrl+C to stop📨 Received: {"type": "request_frame"}...
+🎬 Frame request #327
+📤 Frame #327 sent, size: 105253 bytes, T2: 8.43ms
+📨 Received: {"type": "request_frame"}...
+🎬 Frame request #328
+📤 Frame #328 sent, size: 106365 bytes, T2: 8.13ms
+📨 Received: {"type": "request_frame"}...
+🎬 Frame request #329
+📤 Frame #329 sent, size: 106758 bytes, T2: 8.04ms
+📨 Received: {"type": "request_frame"}...
+🎬 Frame request #330
+📤 Frame #330 sent, size: 107022 bytes, T2: 8.16ms
+📨 Received: {"type": "request_frame"}...
+🎬 Frame request #331
+📤 Frame #331 sent, size: 107366 bytes, T2: 8.16ms
+📨 Received: {"type": "request_frame"}...
+🎬 Frame request #332
+📤 Frame #332 sent, size: 106997 bytes, T2: 8.66ms
+📨 Received: {"type": "request_frame"}...
+🎬 Frame request #333
+📤 Frame #333 sent, size: 107127 bytes, T2: 8.15ms
+
+============================================================
+📊 LATENCY METRICS SUMMARY
+============================================================
+No latency data collected yet.
+📊 Status: Camera: Active | Clients: 1 | Frames: 1497 | Press Ctrl+C to stop📨 Received: {"type": "request_frame"}...
+🎬 Frame request #334
+📤 Frame #334 sent, size: 107137 bytes, T2: 8.17ms
+📨 Received: {"type": "request_frame"}...
+🎬 Frame request #335
+📤 Frame #335 sent, size: 107146 bytes, T2: 8.05ms
+📨 Received: {"type": "request_frame"}...
+🎬 Frame request #336
+📤 Frame #336 sent, size: 106986 bytes, T2: 8.17ms
+📨 Received: {"type": "request_frame"}...
+🎬 Frame request #337
+📤 Frame #337 sent, size: 105966 bytes, T2: 8.57ms
+
+📊 Capture Status:
+  Frames: 1510 | FPS: 26.8
+  Frame size: 1280x720
+  T1 Capture (last): 7.94ms
+  Frame stored successfully in list container
+  T1 Avg (last 10): 7.98ms
+📨 Received: {"type": "request_frame"}...
+🎬 Frame request #338
+📤 Frame #338 sent, size: 105596 bytes, T2: 8.13ms
+📨 Received: {"type": "request_frame"}...
+🎬 Frame request #339
+📤 Frame #339 sent, size: 95852 bytes, T2: 7.95ms
+📨 Received: {"type": "request_frame"}...
+🎬 Frame request #340
+📤 Frame #340 sent, size: 99265 bytes, T2: 8.68ms
+📨 Received: {"type": "request_frame"}...
+🎬 Frame request #341
+📤 Frame #341 sent, size: 96777 bytes, T2: 8.04ms
+📨 Received: {"type": "request_frame"}...
+🎬 Frame request #342
+📤 Frame #342 sent, size: 104045 bytes, T2: 8.53ms
+📊 Status: Camera: Active | Clients: 1 | Frames: 1524 | Press Ctrl+C to stop📨 Received: {"type": "request_frame"}...
+🎬 Frame request #343
+📤 Frame #343 sent, size: 105249 bytes, T2: 8.60ms
+📨 Received: {"type": "request_frame"}...
+🎬 Frame request #344
+📤 Frame #344 sent, size: 105986 bytes, T2: 8.15ms
+📨 Received: {"type": "request_frame"}...
+🎬 Frame request #345
+📤 Frame #345 sent, size: 106158 bytes, T2: 7.90ms
+📨 Received: {"type": "request_frame"}...
+🎬 Frame request #346
+📤 Frame #346 sent, size: 106125 bytes, T2: 8.29ms
+📨 Received: {"type": "request_frame"}...
+🎬 Frame request #347
+📤 Frame #347 sent, size: 105680 bytes, T2: 9.57ms
+📨 Received: {"type": "request_frame"}...
+🎬 Frame request #348
+📤 Frame #348 sent, size: 104771 bytes, T2: 8.46ms
+📨 Received: {"type": "request_frame"}...
+🎬 Frame request #349
+📤 Frame #349 sent, size: 104259 bytes, T2: 8.13ms
+📨 Received: {"type": "request_frame"}...
+🎬 Frame request #350
+📤 Frame #350 sent, size: 103858 bytes, T2: 8.38ms
+📊 Status: Camera: Active | Clients: 1 | Frames: 1551 | Press Ctrl+C to stop📨 Received: {"type": "request_frame"}...
+🎬 Frame request #351
+📤 Frame #351 sent, size: 104085 bytes, T2: 9.07ms
+📨 Received: {"type": "request_frame"}...
+🎬 Frame request #352
+📤 Frame #352 sent, size: 104389 bytes, T2: 8.09ms
+📨 Received: {"type": "request_frame"}...
+🎬 Frame request #353
+📤 Frame #353 sent, size: 104398 bytes, T2: 8.19ms
+📨 Received: {"type": "request_frame"}...
+🎬 Frame request #354
+📤 Frame #354 sent, size: 105235 bytes, T2: 8.19ms
+
+📊 Capture Status:
+  Frames: 1565 | FPS: 26.8
+  Frame size: 1280x720
+  T1 Capture (last): 7.95ms
+  Frame stored successfully in list container
+  T1 Avg (last 10): 7.99ms
+📨 Received: {"type": "request_frame"}...
+🎬 Frame request #355
+📤 Frame #355 sent, size: 106490 bytes, T2: 8.37ms
+📨 Received: {"type": "request_frame"}...
+🎬 Frame request #356
+📤 Frame #356 sent, size: 107847 bytes, T2: 8.17ms
+📨 Received: {"type": "request_frame"}...
+🎬 Frame request #357
+📤 Frame #357 sent, size: 107414 bytes, T2: 8.17ms
+📨 Received: {"type": "request_frame"}...
+🎬 Frame request #358
+📤 Frame #358 sent, size: 107569 bytes, T2: 8.42ms
+📊 Status: Camera: Active | Clients: 1 | Frames: 1578 | Press Ctrl+C to stop📨 Received: {"type": "request_frame"}...
+🎬 Frame request #359
+📤 Frame #359 sent, size: 107776 bytes, T2: 8.36ms
+📨 Received: {"type": "request_frame"}...
+🎬 Frame request #360
+📤 Frame #360 sent, size: 107592 bytes, T2: 8.18ms
+📨 Received: {"type": "request_frame"}...
+🎬 Frame request #361
+📤 Frame #361 sent, size: 107519 bytes, T2: 8.14ms
+📨 Received: {"type": "request_frame"}...
+🎬 Frame request #362
+📤 Frame #362 sent, size: 107228 bytes, T2: 8.20ms
+📨 Received: {"type": "request_frame"}...
+🎬 Frame request #363
+📤 Frame #363 sent, size: 106416 bytes, T2: 8.19ms
+📨 Received: {"type": "request_frame"}...
+🎬 Frame request #364
+📤 Frame #364 sent, size: 105857 bytes, T2: 8.46ms
+📨 Received: {"type": "request_frame"}...
+🎬 Frame request #365
+📤 Frame #365 sent, size: 105940 bytes, T2: 8.27ms
+📨 Received: {"type": "request_frame"}...
+🎬 Frame request #366
+📤 Frame #366 sent, size: 106000 bytes, T2: 8.17ms
+📨 Received: {"type": "request_frame"}...
+🎬 Frame request #367
+📤 Frame #367 sent, size: 105839 bytes, T2: 8.33ms
+📊 Status: Camera: Active | Clients: 1 | Frames: 1605 | Press Ctrl+C to stop📨 Received: {"type": "request_frame"}...
+🎬 Frame request #368
+📤 Frame #368 sent, size: 106129 bytes, T2: 8.30ms
+📨 Received: {"type": "request_frame"}...
+🎬 Frame request #369
+📤 Frame #369 sent, size: 106343 bytes, T2: 8.45ms
+📨 Received: {"type": "request_frame"}...
+🎬 Frame request #370
+📤 Frame #370 sent, size: 106326 bytes, T2: 8.11ms
+📨 Received: {"type": "request_frame"}...
+🎬 Frame request #371
+📤 Frame #371 sent, size: 106445 bytes, T2: 8.14ms
+
+📊 Capture Status:
+  Frames: 1619 | FPS: 26.8
+  Frame size: 1280x720
+  T1 Capture (last): 8.43ms
+  Frame stored successfully in list container
+  T1 Avg (last 10): 8.18ms
+📨 Received: {"type": "request_frame"}...
+🎬 Frame request #372
+📤 Frame #372 sent, size: 106918 bytes, T2: 8.21ms
+📨 Received: {"type": "request_frame"}...
+🎬 Frame request #373
+📤 Frame #373 sent, size: 107557 bytes, T2: 8.37ms
+📨 Received: {"type": "request_frame"}...
+🎬 Frame request #374
+📤 Frame #374 sent, size: 106767 bytes, T2: 8.16ms
+📨 Received: {"type": "request_frame"}...
+🎬 Frame request #375
+📤 Frame #375 sent, size: 107029 bytes, T2: 8.19ms
+📊 Status: Camera: Active | Clients: 1 | Frames: 1632 | Press Ctrl+C to stop📨 Received: {"type": "request_frame"}...
+🎬 Frame request #376
+📤 Frame #376 sent, size: 106186 bytes, T2: 8.34ms
+📨 Received: {"type": "request_frame"}...
+🎬 Frame request #377
+📤 Frame #377 sent, size: 105658 bytes, T2: 8.12ms
+📨 Received: {"type": "request_frame"}...
+🎬 Frame request #378
+📤 Frame #378 sent, size: 105069 bytes, T2: 8.38ms
+📨 Received: {"type": "request_frame"}...
+🎬 Frame request #379
+📤 Frame #379 sent, size: 104125 bytes, T2: 8.17ms
+📨 Received: {"type": "request_frame"}...
+🎬 Frame request #380
+📤 Frame #380 sent, size: 104378 bytes, T2: 6.18ms
+📨 Received: {"type": "request_frame"}...
+🎬 Frame request #381
+📤 Frame #381 sent, size: 104951 bytes, T2: 7.75ms
+📨 Received: {"type": "request_frame"}...
+🎬 Frame request #382
+📤 Frame #382 sent, size: 104998 bytes, T2: 5.99ms
+📨 Received: {"type": "request_frame"}...
+🎬 Frame request #383
+📤 Frame #383 sent, size: 105290 bytes, T2: 5.98ms
+📨 Received: {"type": "request_frame"}...
+🎬 Frame request #384
+📤 Frame #384 sent, size: 105282 bytes, T2: 6.00ms
+📊 Status: Camera: Active | Clients: 1 | Frames: 1659 | Press Ctrl+C to stop📨 Received: {"type": "request_frame"}...
+🎬 Frame request #385
+📤 Frame #385 sent, size: 101263 bytes, T2: 5.98ms
+📨 Received: {"type": "request_frame"}...
+🎬 Frame request #386
+📤 Frame #386 sent, size: 99536 bytes, T2: 6.28ms
+📨 Received: {"type": "request_frame"}...
+🎬 Frame request #387
+📤 Frame #387 sent, size: 94950 bytes, T2: 6.00ms
+📨 Received: {"type": "request_frame"}...
+🎬 Frame request #388
+📤 Frame #388 sent, size: 99538 bytes, T2: 5.95ms
+
+📊 Capture Status:
+  Frames: 1674 | FPS: 26.8
+  Frame size: 1280x720
+  T1 Capture (last): 5.74ms
+  Frame stored successfully in list container
+  T1 Avg (last 10): 5.84ms
+📨 Received: {"type": "request_frame"}...
+🎬 Frame request #389
+📤 Frame #389 sent, size: 106165 bytes, T2: 6.14ms
+📨 Received: {"type": "request_frame"}...
+🎬 Frame request #390
+📤 Frame #390 sent, size: 106261 bytes, T2: 6.04ms
+📨 Received: {"type": "request_frame"}...
+🎬 Frame request #391
+📤 Frame #391 sent, size: 106382 bytes, T2: 6.22ms
+📨 Received: {"type": "request_frame"}...
+🎬 Frame request #392
+📤 Frame #392 sent, size: 106164 bytes, T2: 6.03ms
+📨 Received: {"type": "request_frame"}...
+🎬 Frame request #393
+📤 Frame #393 sent, size: 105659 bytes, T2: 5.98ms
+📊 Status: Camera: Active | Clients: 1 | Frames: 1688 | Press Ctrl+C to stop📨 Received: {"type": "request_frame"}...
+🎬 Frame request #394
+📤 Frame #394 sent, size: 104756 bytes, T2: 5.92ms
+📨 Received: {"type": "request_frame"}...
+🎬 Frame request #395
+📤 Frame #395 sent, size: 104827 bytes, T2: 6.01ms
+📨 Received: {"type": "request_frame"}...
+🎬 Frame request #396
+📤 Frame #396 sent, size: 105112 bytes, T2: 6.61ms
+📨 Received: {"type": "request_frame"}...
+🎬 Frame request #397
+📤 Frame #397 sent, size: 105467 bytes, T2: 6.13ms
+📨 Received: {"type": "request_frame"}...
+🎬 Frame request #398
+📤 Frame #398 sent, size: 104343 bytes, T2: 6.00ms
+📨 Received: {"type": "request_frame"}...
+🎬 Frame request #399
+📤 Frame #399 sent, size: 104635 bytes, T2: 6.11ms
+📨 Received: {"type": "request_frame"}...
+🎬 Frame request #400
+📤 Frame #400 sent, size: 104608 bytes, T2: 6.02ms
+📨 Received: {"type": "request_frame"}...
+🎬 Frame request #401
+📤 Frame #401 sent, size: 104801 bytes, T2: 6.46ms
+📨 Received: {"type": "request_frame"}...
+🎬 Frame request #402
+📤 Frame #402 sent, size: 105003 bytes, T2: 5.97ms
+📊 Status: Camera: Active | Clients: 1 | Frames: 1716 | Press Ctrl+C to stop📨 Received: {"type": "request_frame"}...
+🎬 Frame request #403
+📤 Frame #403 sent, size: 104787 bytes, T2: 6.02ms
+📨 Received: {"type": "request_frame"}...
+🎬 Frame request #404
+📤 Frame #404 sent, size: 105112 bytes, T2: 6.00ms
+📨 Received: {"type": "request_frame"}...
+🎬 Frame request #405
+📤 Frame #405 sent, size: 103650 bytes, T2: 7.07ms
+📨 Received: {"type": "request_frame"}...
+🎬 Frame request #406
+📤 Frame #406 sent, size: 103404 bytes, T2: 5.90ms
+
+📊 Capture Status:
+  Frames: 1732 | FPS: 26.9
+  Frame size: 1280x720
+  T1 Capture (last): 5.73ms
+  Frame stored successfully in list container
+  T1 Avg (last 10): 5.92ms
+📨 Received: {"type": "request_frame"}...
+🎬 Frame request #407
+📤 Frame #407 sent, size: 103487 bytes, T2: 6.01ms
+📨 Received: {"type": "request_frame"}...
+🎬 Frame request #408
+📤 Frame #408 sent, size: 102366 bytes, T2: 5.94ms
+📨 Received: {"type": "request_frame"}...
+🎬 Frame request #409
+📤 Frame #409 sent, size: 101897 bytes, T2: 5.99ms
+📨 Received: {"type": "request_frame"}...
+🎬 Frame request #410
+📤 Frame #410 sent, size: 102075 bytes, T2: 5.99ms
+📨 Received: {"type": "request_frame"}...
+🎬 Frame request #411
+📤 Frame #411 sent, size: 101648 bytes, T2: 6.21ms
+📊 Status: Camera: Active | Clients: 1 | Frames: 1745 | Press Ctrl+C to stop📨 Received: {"type": "request_frame"}...
+🎬 Frame request #412
+📤 Frame #412 sent, size: 101245 bytes, T2: 5.94ms
+📨 Received: {"type": "request_frame"}...
+🎬 Frame request #413
+📤 Frame #413 sent, size: 98232 bytes, T2: 6.01ms
+
+
+============================================================
+🛑 Shutting down servers...
+============================================================
+
+📊 FINAL LATENCY SUMMARY:
+
+============================================================
+📊 LATENCY METRICS SUMMARY
+============================================================
+No latency data collected yet.
+
+📈 OVERALL AVERAGES:
+T1_CAPTURE     :   8.14ms (1752 samples)
+T2_PROCESSING  :   7.84ms (414 samples)
+
+✅ All servers stopped. Goodbye!
+============================================================

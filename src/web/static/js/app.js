@@ -352,7 +352,7 @@ function initializeApp() {
     console.log("Initializing application...");
     initializeUrls();
     initializeEventListeners();
-    updateStatus("Page loaded. Click 'Connect' to begin.");
+    updateStatus("Page loaded. Click .u.jhgmjjjh'Connect' to begin.");
     
     // Auto-connect after 1 second
     setTimeout(() => {
