@@ -4,7 +4,6 @@ import os
 # Add src directory to Python path
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-# Import from the refactored modules
 from src.camera.device_manager import select_camera, list_cameras
 from src.camera.capture import capture_frames
 from src.metrics.latency_tracker import latency_metrics, print_latency_summary
@@ -28,6 +27,9 @@ from typing import Optional
 # Global frame storage (shared between threads) - USING LIST FOR MUTABILITY
 current_frame = [None]  # List wrapper for thread-safe updates
 frame_lock = threading.Lock()
+
+# Shared T1 capture time between capture thread and WebSocket server
+capture_t1_shared = [0.0]  # List wrapper for sharing T1 value across threads
 
 # Configuration
 SERVER_IP = get_ip_address()
@@ -58,10 +60,10 @@ def main():
     
     # Check Python version
     if sys.version_info < (3, 7):
-        print("❌ Python 3.7 or higher is required")
+        print("Python 3.7 or higher is required")
         return
 
-    print("\n🔍 Checking for port conflicts...")
+    print("\nChecking for port conflicts...")
     if not check_port_available(3001, '127.0.0.1'):
         print("⚠️  Port 3001 is already in use!")
         print("   The server will try alternative ports (3002, 3003, etc.)")
@@ -75,17 +77,17 @@ def main():
         return
     
     # Check for required certificates
-    print("\n🔐 SSL Certificate Check")
+    print("\nSSL Certificate Check")
     print("-" * 40)
     if not check_certificates():
         generate_self_signed_cert()
     
     # Start camera capture in a separate thread
-    print("\n🎥 Starting Camera Capture")
+    print("\nStarting Camera Capture")
     print("-" * 40)
     
     def capture_wrapper():
-        capture_frames(camera_index, current_frame, frame_lock, latency_metrics)
+        capture_frames(camera_index, current_frame, frame_lock, latency_metrics, capture_t1_shared)
     
     camera_thread = threading.Thread(
         target=capture_wrapper,
@@ -108,18 +110,18 @@ def main():
         with frame_lock:
             if current_frame[0] is not None:
                 frame_received = True
-                print(f"\n✅ First frame received! Shape: {current_frame[0].shape}")
+                print(f"\nFirst frame received! Shape: {current_frame[0].shape}")
                 break
         print(".", end="", flush=True)
         time.sleep(0.5)
     
     if not frame_received:
-        print("\n❌ No frames received from camera after 10 seconds!")
+        print("\nNo frames received from camera after 10 seconds!")
         print("Check camera connection and permissions")
         return
     
     # Start HTTP server in thread
-    print("\n🌐 Starting HTTP Server")
+    print("\nStarting HTTP Server")
     print("-" * 40)
     http_thread = threading.Thread(
         target=run_http_server,
@@ -130,12 +132,12 @@ def main():
     http_thread.start()
     time.sleep(1)
     
-    # Start WebSocket server in separate thread
-    print("\n🔄 Starting WebSocket Server")
+    # Start WebSocket server in separate thread - PASS capture_t1_shared
+    print("\nStarting WebSocket Server")
     print("-" * 40)
     ws_thread = threading.Thread(
         target=run_websocket_server,
-        args=(WS_PORT, current_frame, frame_lock, connected_clients, latency_metrics),
+        args=(WS_PORT, current_frame, frame_lock, connected_clients, latency_metrics, capture_t1_shared),  # ADDED capture_t1_shared
         daemon=True,
         name="WebSocket-Server"
     )
@@ -146,7 +148,7 @@ def main():
     
     # Display server status
     print("\n" + "="*60)
-    print("✅ SERVERS ARE RUNNING")
+    print("SERVERS ARE RUNNING")
     print("="*60)
     print(f"\n📺 Open your browser and visit:")
     print(f"   https://{SERVER_IP}:{HTTP_PORT}")
@@ -154,18 +156,23 @@ def main():
     print(f"   https://localhost:{HTTP_PORT}")
     
     print("\n📊 Available endpoints:")
-    print(f"   • /         - Streaming dashboard")
-    print(f"   • /debug    - Camera debug view")
-    print(f"   • /health   - System health status")
-    print(f"   • /metrics  - Latency metrics (JSON)")
+    print(f"   - /         - Streaming dashboard")
+    print(f"   - /debug    - Camera debug view")
+    print(f"   - /health   - System health status")
+    print(f"   - /metrics  - Latency metrics (JSON)")
     
     print("\n📈 Latency metrics will be displayed:")
-    print("   • T1 - Capture time (camera to memory)")
-    print("   • T2 - Processing time (resize + encode)")
-    print("   • T3 - Network time (server → client)")
-    print("   • T4 - Decoding time (JPEG → bitmap)")
-    print("   • T5 - Rendering time (canvas draw)")
-    print("   • TOTAL - Sum of all components")
+    print("   📷 T1 - Capture time (camera to memory)")
+    print("   📏 T2 - Resize time (image scaling)")
+    print("   🗜️ T3 - Encode time (JPEG compression)")
+    print("   ⚙️ T4 - Total server processing (T1+T2+T3)")
+    print("   📤 T5 - Network send time (WebSocket transmission)")
+    print("   🌐 T6 - Network receive time (client)")
+    print("   🔓 T7 - Decode time (JPEG → bitmap)")
+    print("   🤖 T8 - YOLO inference time")
+    print("   🎨 T9 - Overlay draw time")
+    print("   🖥️ T10 - Display render time")
+    print("   📊 TOTAL - End-to-end latency")
     
     print("\n🛑 Press Ctrl+C to stop all servers")
     print("="*60)
@@ -186,11 +193,14 @@ def main():
                 print_latency_summary()
                 last_summary_time = current_time
                 
-            # Display status
+            # Display status with T1 value
             with frame_lock:
                 frame_status = "Active" if current_frame[0] is not None else "No frame"
             
-            print(f"\r📊 Status: Camera: {frame_status} | Clients: {len(connected_clients)} | "
+            current_t1 = capture_t1_shared[0] if capture_t1_shared[0] > 0 else 0
+            
+            print(f"\r📊 Status: Camera: {frame_status} | T1: {current_t1:.1f}ms | "
+                  f"Clients: {len(connected_clients)} | "
                   f"Frames: {len(latency_metrics['t1_capture'])} | Press Ctrl+C to stop", end="")
                   
     except KeyboardInterrupt:
@@ -202,12 +212,22 @@ def main():
         print("\n📊 FINAL LATENCY SUMMARY:")
         print_latency_summary()
         
-        # Calculate and print averages
+        # Calculate and print averages for all metrics
         print("\n📈 OVERALL AVERAGES:")
-        for metric, values in latency_metrics.items():
-            if values:
+        metric_names = {
+            't1_capture': 'T1 Capture',
+            't2_resize': 'T2 Resize',
+            't3_encode': 'T3 Encode',
+            't4_total_server': 'T4 Server Total',
+            't5_network_send': 'T5 Network Send',
+            't2_processing': 'Processing (Legacy)'
+        }
+        
+        for metric_key, metric_name in metric_names.items():
+            if metric_key in latency_metrics and latency_metrics[metric_key]:
+                values = latency_metrics[metric_key]
                 avg = sum(values) / len(values)
-                print(f"{metric.upper():15s}: {avg:6.2f}ms ({len(values)} samples)")
+                print(f"{metric_name:20s}: {avg:6.2f}ms ({len(values)} samples)")
         
         # Cleanup
         with frame_lock:
@@ -262,6 +282,6 @@ if __name__ == "__main__":
     try:
         main()
     except Exception as e:
-        print(f"\n❌ Fatal error: {e}")
+        print(f"\nErro fatal: {e}")
         import traceback
         traceback.print_exc()

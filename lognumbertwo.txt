@@ -1,0 +1,936 @@
+Required Python packages:
+  • websockets
+  • opencv-python
+  • numpy
+
+Install with: pip install websockets opencv-python numpy
+============================================================
+
+🔍 Checking for V4L2 utilities...
+✅ v4l2-ctl is available
+
+🔍 Checking for port conflicts...
+
+============================================================
+OMRISK VIDEO STREAMING SERVER WITH LATENCY MEASUREMENT
+============================================================
+Version: 1.0.0
+Server IP: 192.168.1.188
+Hostname: omrisk
+Platform: Linux-6.12.47+rpt-rpi-2712-aarch64-with-glibc2.41
+Python: 3.13.5 (main, Jun 25 2025, 18:55:22) [GCC 14.2.0]
+
+Checking for port conflicts...
+
+📷 Camera Selection
+----------------------------------------
+Scanning for cameras using V4L2...
+Found: /dev/video0 (640x480, 30.0 FPS)
+
+✅ Found 1 camera(s):
+1. /dev/video0 (640x480, 30.0 FPS)
+
+Using the only available camera: /dev/video0 (640x480, 30.0 FPS)
+
+SSL Certificate Check
+----------------------------------------
+
+Starting Camera Capture
+----------------------------------------
+
+Initializing camera /dev/video0...
+Waiting for camera to initialize...
+Camera settings: 640x480 at 30.0 FPS
+Press Ctrl+C in the terminal to stop capturing
+Waiting for first frame...
+
+First frame received! Shape: (480, 640, 3)
+
+Starting HTTP Server
+----------------------------------------
+
+✅ HTTPS server: Running at https://192.168.1.188:8000
+   Also available at: https://localhost:8000
+   Metrics endpoint: https://192.168.1.188:8000/metrics
+
+==================================================
+📊 CAPTURE STATUS (Server)
+==================================================
+  Frames: 41 | FPS: 20.5
+  Frame size: 640x480
+  📷 T1 Capture (last): 4.42ms
+  📷 T1 Capture (avg):  20.82ms
+  ✅ Frame stored successfully
+==================================================
+
+
+Starting WebSocket Server
+----------------------------------------
+🔵 Starting WebSocket thread...
+
+🚀 Starting WebSocket server on port 3001...
+✅ SSL enabled
+✅ WebSocket server running on wss://192.168.1.188:3001
+🔄 Waiting for connections...
+
+==================================================
+📊 CAPTURE STATUS (Server)
+==================================================
+  Frames: 101 | FPS: 25.2
+  Frame size: 640x480
+  📷 T1 Capture (last): 4.63ms
+  📷 T1 Capture (avg):  4.60ms
+  ✅ Frame stored successfully
+==================================================
+
+
+============================================================
+SERVERS ARE RUNNING
+============================================================
+
+📺 Open your browser and visit:
+   https://192.168.1.188:8000
+   or
+   https://localhost:8000
+
+📊 Available endpoints:
+   - /         - Streaming dashboard
+   - /debug    - Camera debug view
+   - /health   - System health status
+   - /metrics  - Latency metrics (JSON)
+
+📈 Latency metrics will be displayed:
+   📷 T1 - Capture time (camera to memory)
+   📏 T2 - Resize time (image scaling)
+   🗜️ T3 - Encode time (JPEG compression)
+   ⚙️ T4 - Total server processing (T1+T2+T3)
+   📤 T5 - Network send time (WebSocket transmission)
+   🌐 T6 - Network receive time (client)
+   🔓 T7 - Decode time (JPEG → bitmap)
+   🤖 T8 - YOLO inference time
+   🎨 T9 - Overlay draw time
+   🖥️ T10 - Display render time
+   📊 TOTAL - End-to-end latency
+
+🛑 Press Ctrl+C to stop all servers
+============================================================
+
+============================================================
+📊 LATENCY METRICS SUMMARY
+============================================================
+No latency data collected yet.
+
+==================================================
+📊 CAPTURE STATUS (Server)
+==================================================
+  Frames: 161 | FPS: 26.8
+  Frame size: 640x480
+  📷 T1 Capture (last): 4.65ms
+  📷 T1 Capture (avg):  4.66ms
+  ✅ Frame stored successfully
+==================================================
+
+📊 Status: Camera: Active | T1: 4.5ms | Clients: 0 | Frames: 0 | Press Ctrl+C to stop📊 Status: Camera: Active | T1: 4.6ms | Clients: 0 | Frames: 0 | Press Ctrl+C to stop
+==================================================
+📊 CAPTURE STATUS (Server)
+==================================================
+  Frames: 221 | FPS: 27.6
+  Frame size: 640x480
+  📷 T1 Capture (last): 4.56ms
+  📷 T1 Capture (avg):  4.66ms
+  ✅ Frame stored successfully
+==================================================
+
+📊 Status: Camera: Active | T1: 4.7ms | Clients: 0 | Frames: 0 | Press Ctrl+C to stop📊 Status: Camera: Active | T1: 4.7ms | Clients: 0 | Frames: 0 | Press Ctrl+C to stop
+==================================================
+📊 CAPTURE STATUS (Server)
+==================================================
+  Frames: 281 | FPS: 28.1
+  Frame size: 640x480
+  📷 T1 Capture (last): 4.68ms
+  📷 T1 Capture (avg):  4.66ms
+  ✅ Frame stored successfully
+==================================================
+
+📊 Status: Camera: Active | T1: 4.7ms | Clients: 0 | Frames: 0 | Press Ctrl+C to stop📊 Status: Camera: Active | T1: 5.9ms | Clients: 0 | Frames: 0 | Press Ctrl+C to stop
+==================================================
+📊 CAPTURE STATUS (Server)
+==================================================
+  Frames: 341 | FPS: 28.4
+  Frame size: 640x480
+  📷 T1 Capture (last): 3.87ms
+  📷 T1 Capture (avg):  4.63ms
+  ✅ Frame stored successfully
+==================================================
+
+📊 Status: Camera: Active | T1: 4.3ms | Clients: 0 | Frames: 0 | Press Ctrl+C to stop📊 Status: Camera: Active | T1: 4.7ms | Clients: 0 | Frames: 0 | Press Ctrl+C to stop
+==================================================
+📊 CAPTURE STATUS (Server)
+==================================================
+  Frames: 401 | FPS: 28.6
+  Frame size: 640x480
+  📷 T1 Capture (last): 4.61ms
+  📷 T1 Capture (avg):  4.61ms
+  ✅ Frame stored successfully
+==================================================
+
+📊 Status: Camera: Active | T1: 4.7ms | Clients: 0 | Frames: 0 | Press Ctrl+C to stop
+============================================================
+📊 LATENCY METRICS SUMMARY
+============================================================
+No latency data collected yet.
+📊 Status: Camera: Active | T1: 4.7ms | Clients: 0 | Frames: 0 | Press Ctrl+C to stop
+==================================================
+📊 CAPTURE STATUS (Server)
+==================================================
+  Frames: 461 | FPS: 28.8
+  Frame size: 640x480
+  📷 T1 Capture (last): 4.73ms
+  📷 T1 Capture (avg):  4.69ms
+  ✅ Frame stored successfully
+==================================================
+
+📊 Status: Camera: Active | T1: 4.7ms | Clients: 0 | Frames: 0 | Press Ctrl+C to stop📊 Status: Camera: Active | T1: 4.7ms | Clients: 0 | Frames: 0 | Press Ctrl+C to stop
+==================================================
+📊 CAPTURE STATUS (Server)
+==================================================
+  Frames: 521 | FPS: 28.9
+  Frame size: 640x480
+  📷 T1 Capture (last): 4.68ms
+  📷 T1 Capture (avg):  4.72ms
+  ✅ Frame stored successfully
+==================================================
+
+📊 Status: Camera: Active | T1: 4.7ms | Clients: 0 | Frames: 0 | Press Ctrl+C to stop📊 Status: Camera: Active | T1: 4.6ms | Clients: 0 | Frames: 0 | Press Ctrl+C to stop
+==================================================
+📊 CAPTURE STATUS (Server)
+==================================================
+  Frames: 581 | FPS: 29.0
+  Frame size: 640x480
+  📷 T1 Capture (last): 4.67ms
+  📷 T1 Capture (avg):  4.69ms
+  ✅ Frame stored successfully
+==================================================
+
+📊 Status: Camera: Active | T1: 4.7ms | Clients: 0 | Frames: 0 | Press Ctrl+C to stop📊 Status: Camera: Active | T1: 4.7ms | Clients: 0 | Frames: 0 | Press Ctrl+C to stop
+==================================================
+📊 CAPTURE STATUS (Server)
+==================================================
+  Frames: 641 | FPS: 29.1
+  Frame size: 640x480
+  📷 T1 Capture (last): 4.52ms
+  📷 T1 Capture (avg):  4.70ms
+  ✅ Frame stored successfully
+==================================================
+
+📊 Status: Camera: Active | T1: 4.7ms | Clients: 0 | Frames: 0 | Press Ctrl+C to stop📊 Status: Camera: Active | T1: 4.7ms | Clients: 0 | Frames: 0 | Press Ctrl+C to stop
+==================================================
+📊 CAPTURE STATUS (Server)
+==================================================
+  Frames: 701 | FPS: 29.2
+  Frame size: 640x480
+  📷 T1 Capture (last): 4.60ms
+  📷 T1 Capture (avg):  4.71ms
+  ✅ Frame stored successfully
+==================================================
+
+📊 Status: Camera: Active | T1: 4.7ms | Clients: 0 | Frames: 0 | Press Ctrl+C to stop
+============================================================
+📊 LATENCY METRICS SUMMARY
+============================================================
+No latency data collected yet.
+📊 Status: Camera: Active | T1: 4.7ms | Clients: 0 | Frames: 0 | Press Ctrl+C to stop
+==================================================
+📊 CAPTURE STATUS (Server)
+==================================================
+  Frames: 761 | FPS: 29.3
+  Frame size: 640x480
+  📷 T1 Capture (last): 4.63ms
+  📷 T1 Capture (avg):  4.71ms
+  ✅ Frame stored successfully
+==================================================
+
+📊 Status: Camera: Active | T1: 4.8ms | Clients: 0 | Frames: 0 | Press Ctrl+C to stop📊 Status: Camera: Active | T1: 4.7ms | Clients: 0 | Frames: 0 | Press Ctrl+C to stop
+==================================================
+📊 CAPTURE STATUS (Server)
+==================================================
+  Frames: 821 | FPS: 29.3
+  Frame size: 640x480
+  📷 T1 Capture (last): 4.66ms
+  📷 T1 Capture (avg):  4.71ms
+  ✅ Frame stored successfully
+==================================================
+
+📊 Status: Camera: Active | T1: 4.7ms | Clients: 0 | Frames: 0 | Press Ctrl+C to stop📊 Status: Camera: Active | T1: 4.5ms | Clients: 0 | Frames: 0 | Press Ctrl+C to stop
+==================================================
+📊 CAPTURE STATUS (Server)
+==================================================
+  Frames: 881 | FPS: 29.4
+  Frame size: 640x480
+  📷 T1 Capture (last): 4.60ms
+  📷 T1 Capture (avg):  4.71ms
+  ✅ Frame stored successfully
+==================================================
+
+📊 Status: Camera: Active | T1: 4.7ms | Clients: 0 | Frames: 0 | Press Ctrl+C to stop📊 Status: Camera: Active | T1: 4.7ms | Clients: 0 | Frames: 0 | Press Ctrl+C to stop
+==================================================
+📊 CAPTURE STATUS (Server)
+==================================================
+  Frames: 941 | FPS: 29.4
+  Frame size: 640x480
+  📷 T1 Capture (last): 4.71ms
+  📷 T1 Capture (avg):  4.71ms
+  ✅ Frame stored successfully
+==================================================
+
+📊 Status: Camera: Active | T1: 4.7ms | Clients: 0 | Frames: 0 | Press Ctrl+C to stop📊 Status: Camera: Active | T1: 4.6ms | Clients: 0 | Frames: 0 | Press Ctrl+C to stop
+==================================================
+📊 CAPTURE STATUS (Server)
+==================================================
+  Frames: 1001 | FPS: 29.4
+  Frame size: 640x480
+  📷 T1 Capture (last): 4.63ms
+  📷 T1 Capture (avg):  4.71ms
+  ✅ Frame stored successfully
+==================================================
+
+📊 Status: Camera: Active | T1: 4.7ms | Clients: 0 | Frames: 0 | Press Ctrl+C to stop
+============================================================
+📊 LATENCY METRICS SUMMARY
+============================================================
+No latency data collected yet.
+📊 Status: Camera: Active | T1: 4.7ms | Clients: 0 | Frames: 0 | Press Ctrl+C to stop✅ Client connected from ('192.168.1.202', 41282)
+👥 Total clients: 1
+📤 Sent welcome message
+
+==================================================
+📊 CAPTURE STATUS (Server)
+==================================================
+  Frames: 1061 | FPS: 29.5
+  Frame size: 640x480
+  📷 T1 Capture (last): 4.49ms
+  📷 T1 Capture (avg):  4.71ms
+  ✅ Frame stored successfully
+==================================================
+
+🎬 Frame request #0
+📤 Frame #1 | T1:4.5ms | T2:0.0ms | T3:2.4ms | T4:6.9ms | T5:6.3ms
+🎬 Frame request #1
+📤 Frame #2 | T1:4.6ms | T2:0.0ms | T3:2.7ms | T4:7.4ms | T5:7.5ms
+📊 Status: Camera: Active | T1: 4.7ms | Clients: 1 | Frames: 2 | Press Ctrl+C to stop🎬 Frame request #2
+📤 Frame #3 | T1:4.7ms | T2:0.0ms | T3:2.7ms | T4:7.4ms | T5:7.1ms
+🎬 Frame request #3
+📤 Frame #4 | T1:4.7ms | T2:0.0ms | T3:2.7ms | T4:7.5ms | T5:7.0ms
+🎬 Frame request #4
+📊 Status: Camera: Active | T1: 4.7ms | Clients: 1 | Frames: 4 | Press Ctrl+C to stop📤 Frame #5 | T1:4.7ms | T2:0.0ms | T3:2.7ms | T4:7.4ms | T5:6.9ms
+
+==================================================
+📊 CAPTURE STATUS (Server)
+==================================================
+  Frames: 1121 | FPS: 29.5
+  Frame size: 640x480
+  📷 T1 Capture (last): 4.73ms
+  📷 T1 Capture (avg):  4.72ms
+  ✅ Frame stored successfully
+==================================================
+
+🎬 Frame request #5
+📤 Frame #6 | T1:4.7ms | T2:0.0ms | T3:2.7ms | T4:7.5ms | T5:7.3ms
+🎬 Frame request #6
+📤 Frame #7 | T1:4.7ms | T2:0.0ms | T3:2.8ms | T4:7.4ms | T5:7.3ms
+📊 Status: Camera: Active | T1: 4.6ms | Clients: 1 | Frames: 7 | Press Ctrl+C to stop🎬 Frame request #7
+📤 Frame #8 | T1:4.7ms | T2:0.0ms | T3:2.8ms | T4:7.5ms | T5:7.3ms
+🎬 Frame request #8
+📤 Frame #9 | T1:4.7ms | T2:0.0ms | T3:2.8ms | T4:7.6ms | T5:7.5ms
+📊 Status: Camera: Active | T1: 4.7ms | Clients: 1 | Frames: 9 | Press Ctrl+C to stop
+==================================================
+📊 CAPTURE STATUS (Server)
+==================================================
+  Frames: 1181 | FPS: 29.5
+  Frame size: 640x480
+  📷 T1 Capture (last): 4.76ms
+  📷 T1 Capture (avg):  4.72ms
+  ✅ Frame stored successfully
+==================================================
+
+🎬 Frame request #9
+📤 Frame #10 | T1:4.8ms | T2:0.0ms | T3:2.8ms | T4:7.6ms | T5:7.5ms
+🎬 Frame request #10
+📤 Frame #11 | T1:4.8ms | T2:0.0ms | T3:2.8ms | T4:7.6ms | T5:7.4ms
+📊 Status: Camera: Active | T1: 4.7ms | Clients: 1 | Frames: 11 | Press Ctrl+C to stop🎬 Frame request #11
+📤 Frame #12 | T1:4.6ms | T2:0.0ms | T3:2.8ms | T4:7.4ms | T5:7.3ms
+🎬 Frame request #12
+📤 Frame #13 | T1:4.7ms | T2:0.0ms | T3:2.8ms | T4:7.5ms | T5:7.2ms
+📊 Status: Camera: Active | T1: 4.7ms | Clients: 1 | Frames: 13 | Press Ctrl+C to stop
+==================================================
+📊 CAPTURE STATUS (Server)
+==================================================
+  Frames: 1241 | FPS: 29.5
+  Frame size: 640x480
+  📷 T1 Capture (last): 4.71ms
+  📷 T1 Capture (avg):  4.72ms
+  ✅ Frame stored successfully
+==================================================
+
+🎬 Frame request #13
+📤 Frame #14 | T1:4.7ms | T2:0.0ms | T3:2.7ms | T4:7.4ms | T5:7.1ms
+🎬 Frame request #14
+📤 Frame #15 | T1:4.7ms | T2:0.0ms | T3:2.8ms | T4:7.5ms | T5:7.3ms
+📊 Status: Camera: Active | T1: 4.7ms | Clients: 1 | Frames: 15 | Press Ctrl+C to stop🎬 Frame request #15
+📤 Frame #16 | T1:4.7ms | T2:0.0ms | T3:2.8ms | T4:7.5ms | T5:7.0ms
+🎬 Frame request #16
+📤 Frame #17 | T1:4.7ms | T2:0.0ms | T3:2.8ms | T4:7.5ms | T5:7.5ms
+🎬 Frame request #17
+📤 Frame #18 | T1:4.8ms | T2:0.0ms | T3:2.8ms | T4:7.6ms | T5:7.5ms
+📊 Status: Camera: Active | T1: 4.8ms | Clients: 1 | Frames: 18 | Press Ctrl+C to stop
+==================================================
+📊 CAPTURE STATUS (Server)
+==================================================
+  Frames: 1301 | FPS: 29.6
+  Frame size: 640x480
+  📷 T1 Capture (last): 4.72ms
+  📷 T1 Capture (avg):  4.72ms
+  ✅ Frame stored successfully
+==================================================
+
+🎬 Frame request #18
+📤 Frame #19 | T1:4.8ms | T2:0.0ms | T3:2.8ms | T4:7.6ms | T5:7.5ms
+🎬 Frame request #19
+📤 Frame #20 | T1:4.1ms | T2:0.0ms | T3:2.1ms | T4:6.2ms | T5:5.9ms
+📊 Status: Camera: Active | T1: 5.2ms | Clients: 1 | Frames: 20 | Press Ctrl+C to stop🎬 Frame request #20
+📤 Frame #21 | T1:2.3ms | T2:0.0ms | T3:1.9ms | T4:4.3ms | T5:11.0ms
+🎬 Frame request #21
+📤 Frame #22 | T1:4.8ms | T2:0.0ms | T3:7.3ms | T4:12.1ms | T5:7.3ms
+🎬 Frame request #22
+📤 Frame #23 | T1:4.0ms | T2:0.0ms | T3:6.2ms | T4:10.2ms | T5:5.6ms
+
+============================================================
+📊 LATENCY METRICS SUMMARY
+============================================================
+No latency data collected yet.
+📊 Status: Camera: Active | T1: 4.0ms | Clients: 1 | Frames: 23 | Press Ctrl+C to stop
+==================================================
+📊 CAPTURE STATUS (Server)
+==================================================
+  Frames: 1361 | FPS: 29.6
+  Frame size: 640x480
+  📷 T1 Capture (last): 3.23ms
+  📷 T1 Capture (avg):  4.34ms
+  ✅ Frame stored successfully
+==================================================
+
+🎬 Frame request #23
+📤 Frame #24 | T1:4.4ms | T2:0.0ms | T3:2.0ms | T4:6.4ms | T5:5.3ms
+🎬 Frame request #24
+📤 Frame #25 | T1:4.7ms | T2:0.0ms | T3:1.9ms | T4:6.6ms | T5:5.1ms
+📊 Status: Camera: Active | T1: 4.9ms | Clients: 1 | Frames: 25 | Press Ctrl+C to stop🎬 Frame request #25
+📤 Frame #26 | T1:4.7ms | T2:0.0ms | T3:1.9ms | T4:6.6ms | T5:5.0ms
+🎬 Frame request #26
+📤 Frame #27 | T1:4.7ms | T2:0.0ms | T3:1.9ms | T4:6.5ms | T5:5.0ms
+📊 Status: Camera: Active | T1: 4.7ms | Clients: 1 | Frames: 27 | Press Ctrl+C to stop🎬 Frame request #27
+📤 Frame #28 | T1:4.7ms | T2:0.0ms | T3:1.9ms | T4:6.6ms | T5:4.9ms
+
+==================================================
+📊 CAPTURE STATUS (Server)
+==================================================
+  Frames: 1422 | FPS: 29.6
+  Frame size: 640x480
+  📷 T1 Capture (last): 4.50ms
+  📷 T1 Capture (avg):  4.28ms
+  ✅ Frame stored successfully
+==================================================
+
+🎬 Frame request #28
+📤 Frame #29 | T1:4.7ms | T2:0.0ms | T3:1.9ms | T4:6.6ms | T5:4.9ms
+🎬 Frame request #29
+
+======================================================================
+📊 SERVER TIMING (Frame #30)
+======================================================================
+📷 T1 Capture:      4.74ms  (camera → memory)
+📏 T2 Resize:       0.01ms  (resize operation)
+🗜️ T3 Encode:       1.88ms  (JPEG compression)
+----------------------------------------------------------------------
+⚙️ T4 Total Server:   6.63ms  (T1+T2+T3)
+📤 T5 Network Send:   4.99ms  (WebSocket send)
+======================================================================
+
+📤 Frame #30 | T1:4.7ms | T2:0.0ms | T3:1.9ms | T4:6.6ms | T5:5.0ms
+📊 Status: Camera: Active | T1: 4.5ms | Clients: 1 | Frames: 30 | Press Ctrl+C to stop🎬 Frame request #30
+📤 Frame #31 | T1:4.5ms | T2:0.0ms | T3:1.9ms | T4:6.4ms | T5:4.9ms
+🎬 Frame request #31
+📤 Frame #32 | T1:4.7ms | T2:0.0ms | T3:2.5ms | T4:7.2ms | T5:6.4ms
+📊 Status: Camera: Active | T1: 4.7ms | Clients: 1 | Frames: 32 | Press Ctrl+C to stop🎬 Frame request #32
+
+==================================================
+📊 CAPTURE STATUS (Server)
+==================================================
+  Frames: 1482 | FPS: 29.6
+  Frame size: 640x480
+  📷 T1 Capture (last): 4.56ms
+  📷 T1 Capture (avg):  4.69ms
+  ✅ Frame stored successfully
+==================================================
+
+📤 Frame #33 | T1:4.8ms | T2:0.0ms | T3:2.8ms | T4:7.6ms | T5:7.2ms
+🎬 Frame request #33
+📤 Frame #34 | T1:4.6ms | T2:0.0ms | T3:2.8ms | T4:7.5ms | T5:7.4ms
+🎬 Frame request #34
+📤 Frame #35 | T1:4.7ms | T2:0.0ms | T3:2.8ms | T4:7.5ms | T5:7.3ms
+📊 Status: Camera: Active | T1: 4.7ms | Clients: 1 | Frames: 35 | Press Ctrl+C to stop🎬 Frame request #35
+📤 Frame #36 | T1:4.8ms | T2:0.0ms | T3:2.8ms | T4:7.6ms | T5:7.2ms
+🎬 Frame request #36
+📤 Frame #37 | T1:4.7ms | T2:0.0ms | T3:2.9ms | T4:7.6ms | T5:7.1ms
+📊 Status: Camera: Active | T1: 3.1ms | Clients: 1 | Frames: 37 | Press Ctrl+C to stop
+==================================================
+📊 CAPTURE STATUS (Server)
+==================================================
+  Frames: 1542 | FPS: 29.6
+  Frame size: 640x480
+  📷 T1 Capture (last): 4.49ms
+  📷 T1 Capture (avg):  4.67ms
+  ✅ Frame stored successfully
+==================================================
+
+🎬 Frame request #37
+📤 Frame #38 | T1:4.8ms | T2:0.0ms | T3:2.8ms | T4:7.5ms | T5:7.1ms
+🎬 Frame request #38
+📤 Frame #39 | T1:4.7ms | T2:0.0ms | T3:2.9ms | T4:7.6ms | T5:8.0ms
+📊 Status: Camera: Active | T1: 4.6ms | Clients: 1 | Frames: 39 | Press Ctrl+C to stop🎬 Frame request #39
+📤 Frame #40 | T1:4.7ms | T2:0.0ms | T3:2.8ms | T4:7.5ms | T5:7.6ms
+🎬 Frame request #40
+📤 Frame #41 | T1:4.9ms | T2:0.0ms | T3:2.8ms | T4:7.7ms | T5:7.2ms
+🎬 Frame request #41
+📤 Frame #42 | T1:4.9ms | T2:0.0ms | T3:2.8ms | T4:7.7ms | T5:7.2ms
+📊 Status: Camera: Active | T1: 4.7ms | Clients: 1 | Frames: 42 | Press Ctrl+C to stop
+==================================================
+📊 CAPTURE STATUS (Server)
+==================================================
+  Frames: 1602 | FPS: 29.6
+  Frame size: 640x480
+  📷 T1 Capture (last): 4.59ms
+  📷 T1 Capture (avg):  4.66ms
+  ✅ Frame stored successfully
+==================================================
+
+🎬 Frame request #42
+📤 Frame #43 | T1:4.6ms | T2:0.0ms | T3:2.7ms | T4:7.3ms | T5:7.1ms
+🎬 Frame request #43
+📤 Frame #44 | T1:4.9ms | T2:0.0ms | T3:2.8ms | T4:7.7ms | T5:7.7ms
+📊 Status: Camera: Active | T1: 4.7ms | Clients: 1 | Frames: 44 | Press Ctrl+C to stop🎬 Frame request #44
+📤 Frame #45 | T1:4.7ms | T2:0.0ms | T3:2.8ms | T4:7.5ms | T5:7.5ms
+🎬 Frame request #45
+📤 Frame #46 | T1:4.8ms | T2:0.0ms | T3:2.8ms | T4:7.6ms | T5:7.4ms
+🎬 Frame request #46
+📤 Frame #47 | T1:4.7ms | T2:0.0ms | T3:2.8ms | T4:7.5ms | T5:6.8ms
+
+============================================================
+📊 LATENCY METRICS SUMMARY
+============================================================
+No latency data collected yet.
+📊 Status: Camera: Active | T1: 4.4ms | Clients: 1 | Frames: 47 | Press Ctrl+C to stop
+==================================================
+📊 CAPTURE STATUS (Server)
+==================================================
+  Frames: 1662 | FPS: 29.6
+  Frame size: 640x480
+  📷 T1 Capture (last): 3.55ms
+  📷 T1 Capture (avg):  4.66ms
+  ✅ Frame stored successfully
+==================================================
+
+🎬 Frame request #47
+📤 Frame #48 | T1:4.6ms | T2:0.0ms | T3:2.6ms | T4:7.2ms | T5:7.1ms
+🎬 Frame request #48
+📤 Frame #49 | T1:4.8ms | T2:0.0ms | T3:2.9ms | T4:7.7ms | T5:7.7ms
+📊 Status: Camera: Active | T1: 4.7ms | Clients: 1 | Frames: 49 | Press Ctrl+C to stop🎬 Frame request #49
+📤 Frame #50 | T1:4.8ms | T2:0.0ms | T3:2.8ms | T4:7.6ms | T5:7.3ms
+🎬 Frame request #50
+📤 Frame #51 | T1:4.7ms | T2:0.0ms | T3:2.8ms | T4:7.5ms | T5:7.3ms
+🎬 Frame request #51
+📤 Frame #52 | T1:4.5ms | T2:0.0ms | T3:2.8ms | T4:7.3ms | T5:7.4ms
+📊 Status: Camera: Active | T1: 4.6ms | Clients: 1 | Frames: 52 | Press Ctrl+C to stop
+==================================================
+📊 CAPTURE STATUS (Server)
+==================================================
+  Frames: 1722 | FPS: 29.7
+  Frame size: 640x480
+  📷 T1 Capture (last): 4.67ms
+  📷 T1 Capture (avg):  4.66ms
+  ✅ Frame stored successfully
+==================================================
+
+🎬 Frame request #52
+📤 Frame #53 | T1:5.1ms | T2:0.0ms | T3:2.8ms | T4:7.9ms | T5:7.1ms
+🎬 Frame request #53
+📤 Frame #54 | T1:4.6ms | T2:0.0ms | T3:2.5ms | T4:7.1ms | T5:6.7ms
+📊 Status: Camera: Active | T1: 4.6ms | Clients: 1 | Frames: 54 | Press Ctrl+C to stop🎬 Frame request #54
+📤 Frame #55 | T1:4.7ms | T2:0.0ms | T3:2.8ms | T4:7.5ms | T5:7.4ms
+🎬 Frame request #55
+📤 Frame #56 | T1:4.1ms | T2:0.0ms | T3:2.0ms | T4:6.1ms | T5:7.8ms
+🎬 Frame request #56
+📤 Frame #57 | T1:4.6ms | T2:0.0ms | T3:2.0ms | T4:6.6ms | T5:5.5ms
+📊 Status: Camera: Active | T1: 4.3ms | Clients: 1 | Frames: 57 | Press Ctrl+C to stop
+==================================================
+📊 CAPTURE STATUS (Server)
+==================================================
+  Frames: 1782 | FPS: 29.7
+  Frame size: 640x480
+  📷 T1 Capture (last): 3.31ms
+  📷 T1 Capture (avg):  4.60ms
+  ✅ Frame stored successfully
+==================================================
+
+🎬 Frame request #57
+📤 Frame #58 | T1:10.9ms | T2:0.1ms | T3:2.1ms | T4:13.1ms | T5:8.5ms
+🎬 Frame request #58
+📤 Frame #59 | T1:6.3ms | T2:0.0ms | T3:2.0ms | T4:8.3ms | T5:5.5ms
+📊 Status: Camera: Active | T1: 4.4ms | Clients: 1 | Frames: 59 | Press Ctrl+C to stop🎬 Frame request #59
+
+======================================================================
+📊 SERVER TIMING (Frame #60)
+======================================================================
+📷 T1 Capture:      4.51ms  (camera → memory)
+📏 T2 Resize:       0.02ms  (resize operation)
+🗜️ T3 Encode:       2.01ms  (JPEG compression)
+----------------------------------------------------------------------
+⚙️ T4 Total Server:   6.53ms  (T1+T2+T3)
+📤 T5 Network Send:   5.51ms  (WebSocket send)
+======================================================================
+
+📤 Frame #60 | T1:4.5ms | T2:0.0ms | T3:2.0ms | T4:6.5ms | T5:5.5ms
+🎬 Frame request #60
+📤 Frame #61 | T1:4.6ms | T2:0.0ms | T3:2.0ms | T4:6.6ms | T5:5.4ms
+🎬 Frame request #61
+📤 Frame #62 | T1:4.2ms | T2:0.0ms | T3:2.0ms | T4:6.2ms | T5:5.6ms
+📊 Status: Camera: Active | T1: 4.1ms | Clients: 1 | Frames: 62 | Press Ctrl+C to stop
+==================================================
+📊 CAPTURE STATUS (Server)
+==================================================
+  Frames: 1843 | FPS: 29.7
+  Frame size: 640x480
+  📷 T1 Capture (last): 4.66ms
+  📷 T1 Capture (avg):  4.38ms
+  ✅ Frame stored successfully
+==================================================
+
+🎬 Frame request #62
+📤 Frame #63 | T1:4.8ms | T2:0.0ms | T3:2.0ms | T4:6.8ms | T5:5.3ms
+🎬 Frame request #63
+📤 Frame #64 | T1:4.4ms | T2:0.0ms | T3:2.0ms | T4:6.4ms | T5:5.1ms
+📊 Status: Camera: Active | T1: 2.9ms | Clients: 1 | Frames: 64 | Press Ctrl+C to stop🎬 Frame request #64
+📤 Frame #65 | T1:3.5ms | T2:0.0ms | T3:2.0ms | T4:5.5ms | T5:5.6ms
+🎬 Frame request #65
+📤 Frame #66 | T1:4.6ms | T2:0.0ms | T3:2.0ms | T4:6.7ms | T5:6.1ms
+🎬 Frame request #66
+📤 Frame #67 | T1:4.6ms | T2:0.0ms | T3:2.0ms | T4:6.6ms | T5:5.8ms
+📊 Status: Camera: Active | T1: 4.9ms | Clients: 1 | Frames: 67 | Press Ctrl+C to stop
+==================================================
+📊 CAPTURE STATUS (Server)
+==================================================
+  Frames: 1903 | FPS: 29.7
+  Frame size: 640x480
+  📷 T1 Capture (last): 4.64ms
+  📷 T1 Capture (avg):  4.48ms
+  ✅ Frame stored successfully
+==================================================
+
+🎬 Frame request #67
+📤 Frame #68 | T1:6.2ms | T2:0.0ms | T3:2.1ms | T4:8.4ms | T5:5.5ms
+🎬 Frame request #68
+📤 Frame #69 | T1:4.2ms | T2:0.0ms | T3:2.7ms | T4:7.0ms | T5:7.6ms
+📊 Status: Camera: Active | T1: 5.0ms | Clients: 1 | Frames: 69 | Press Ctrl+C to stop🎬 Frame request #69
+📤 Frame #70 | T1:4.7ms | T2:0.0ms | T3:2.8ms | T4:7.4ms | T5:7.5ms
+🎬 Frame request #70
+📤 Frame #71 | T1:5.1ms | T2:0.0ms | T3:2.6ms | T4:7.7ms | T5:7.1ms
+🎬 Frame request #71
+📤 Frame #72 | T1:4.5ms | T2:0.0ms | T3:2.6ms | T4:7.1ms | T5:7.4ms
+
+============================================================
+📊 LATENCY METRICS SUMMARY
+============================================================
+No latency data collected yet.
+📊 Status: Camera: Active | T1: 4.8ms | Clients: 1 | Frames: 72 | Press Ctrl+C to stop
+==================================================
+📊 CAPTURE STATUS (Server)
+==================================================
+  Frames: 1963 | FPS: 29.7
+  Frame size: 640x480
+  📷 T1 Capture (last): 4.65ms
+  📷 T1 Capture (avg):  4.53ms
+  ✅ Frame stored successfully
+==================================================
+
+🎬 Frame request #72
+📤 Frame #73 | T1:5.2ms | T2:0.0ms | T3:2.9ms | T4:8.1ms | T5:7.4ms
+🎬 Frame request #73
+📤 Frame #74 | T1:5.1ms | T2:0.0ms | T3:2.9ms | T4:8.0ms | T5:7.9ms
+📊 Status: Camera: Active | T1: 4.7ms | Clients: 1 | Frames: 74 | Press Ctrl+C to stop🎬 Frame request #74
+📤 Frame #75 | T1:4.7ms | T2:0.0ms | T3:2.8ms | T4:7.5ms | T5:7.3ms
+🎬 Frame request #75
+📤 Frame #76 | T1:4.6ms | T2:0.0ms | T3:2.8ms | T4:7.4ms | T5:7.4ms
+🎬 Frame request #76
+📤 Frame #77 | T1:5.2ms | T2:0.0ms | T3:2.6ms | T4:7.8ms | T5:6.8ms
+📊 Status: Camera: Active | T1: 4.0ms | Clients: 1 | Frames: 77 | Press Ctrl+C to stop
+==================================================
+📊 CAPTURE STATUS (Server)
+==================================================
+  Frames: 2023 | FPS: 29.7
+  Frame size: 640x480
+  📷 T1 Capture (last): 4.73ms
+  📷 T1 Capture (avg):  4.60ms
+  ✅ Frame stored successfully
+==================================================
+
+🎬 Frame request #77
+📤 Frame #78 | T1:4.5ms | T2:0.0ms | T3:2.8ms | T4:7.3ms | T5:7.5ms
+🎬 Frame request #78
+📤 Frame #79 | T1:4.8ms | T2:0.0ms | T3:1.9ms | T4:6.7ms | T5:5.1ms
+📊 Status: Camera: Active | T1: 5.5ms | Clients: 1 | Frames: 79 | Press Ctrl+C to stop🎬 Frame request #79
+📤 Frame #80 | T1:4.0ms | T2:0.0ms | T3:1.9ms | T4:5.9ms | T5:5.1ms
+🎬 Frame request #80
+📤 Frame #81 | T1:4.7ms | T2:0.0ms | T3:1.9ms | T4:6.6ms | T5:5.1ms
+🎬 Frame request #81
+📤 Frame #82 | T1:4.7ms | T2:0.0ms | T3:1.9ms | T4:6.6ms | T5:5.0ms
+📊 Status: Camera: Active | T1: 4.7ms | Clients: 1 | Frames: 82 | Press Ctrl+C to stop
+==================================================
+📊 CAPTURE STATUS (Server)
+==================================================
+  Frames: 2083 | FPS: 29.7
+  Frame size: 640x480
+  📷 T1 Capture (last): 4.67ms
+  📷 T1 Capture (avg):  4.61ms
+  ✅ Frame stored successfully
+==================================================
+
+🎬 Frame request #82
+📤 Frame #83 | T1:4.7ms | T2:0.0ms | T3:2.0ms | T4:6.7ms | T5:5.3ms
+🎬 Frame request #83
+📤 Frame #84 | T1:4.8ms | T2:0.0ms | T3:1.9ms | T4:6.7ms | T5:5.1ms
+🎬 Frame request #84
+📊 Status: Camera: Active | T1: 5.4ms | Clients: 1 | Frames: 84 | Press Ctrl+C to stop📤 Frame #85 | T1:5.3ms | T2:0.0ms | T3:2.3ms | T4:7.6ms | T5:5.3ms
+🎬 Frame request #85
+📤 Frame #86 | T1:3.9ms | T2:0.0ms | T3:2.0ms | T4:5.9ms | T5:5.7ms
+🎬 Frame request #86
+📤 Frame #87 | T1:4.7ms | T2:0.0ms | T3:1.9ms | T4:6.6ms | T5:5.0ms
+📊 Status: Camera: Active | T1: 5.1ms | Clients: 1 | Frames: 87 | Press Ctrl+C to stop
+==================================================
+📊 CAPTURE STATUS (Server)
+==================================================
+  Frames: 2143 | FPS: 29.7
+  Frame size: 640x480
+  📷 T1 Capture (last): 4.70ms
+  📷 T1 Capture (avg):  4.62ms
+  ✅ Frame stored successfully
+==================================================
+
+🎬 Frame request #87
+📤 Frame #88 | T1:5.2ms | T2:0.0ms | T3:2.0ms | T4:7.2ms | T5:5.3ms
+🎬 Frame request #88
+📤 Frame #89 | T1:4.6ms | T2:0.0ms | T3:1.9ms | T4:6.6ms | T5:5.4ms
+🎬 Frame request #89
+
+======================================================================
+📊 SERVER TIMING (Frame #90)
+======================================================================
+📷 T1 Capture:      4.93ms  (camera → memory)
+📏 T2 Resize:       0.01ms  (resize operation)
+🗜️ T3 Encode:       1.89ms  (JPEG compression)
+----------------------------------------------------------------------
+⚙️ T4 Total Server:   6.83ms  (T1+T2+T3)
+📤 T5 Network Send:   5.09ms  (WebSocket send)
+======================================================================
+
+📤 Frame #90 | T1:4.9ms | T2:0.0ms | T3:1.9ms | T4:6.8ms | T5:5.1ms
+📊 Status: Camera: Active | T1: 4.7ms | Clients: 1 | Frames: 90 | Press Ctrl+C to stop🎬 Frame request #90
+📤 Frame #91 | T1:5.0ms | T2:0.0ms | T3:1.9ms | T4:6.9ms | T5:5.6ms
+🎬 Frame request #91
+📤 Frame #92 | T1:3.3ms | T2:0.0ms | T3:2.8ms | T4:6.1ms | T5:7.4ms
+📊 Status: Camera: Active | T1: 4.6ms | Clients: 1 | Frames: 92 | Press Ctrl+C to stop
+==================================================
+📊 CAPTURE STATUS (Server)
+==================================================
+  Frames: 2203 | FPS: 29.7
+  Frame size: 640x480
+  📷 T1 Capture (last): 4.63ms
+  📷 T1 Capture (avg):  4.64ms
+  ✅ Frame stored successfully
+==================================================
+
+🎬 Frame request #92
+📤 Frame #93 | T1:4.6ms | T2:0.0ms | T3:2.8ms | T4:7.4ms | T5:7.3ms
+🎬 Frame request #93
+📤 Frame #94 | T1:4.7ms | T2:0.0ms | T3:2.8ms | T4:7.5ms | T5:7.4ms
+🎬 Frame request #94
+📤 Frame #95 | T1:3.9ms | T2:0.0ms | T3:1.9ms | T4:5.9ms | T5:5.1ms
+📊 Status: Camera: Active | T1: 4.7ms | Clients: 1 | Frames: 95 | Press Ctrl+C to stop🎬 Frame request #95
+📤 Frame #96 | T1:5.0ms | T2:0.0ms | T3:1.9ms | T4:6.9ms | T5:5.2ms
+🎬 Frame request #96
+📤 Frame #97 | T1:2.2ms | T2:0.0ms | T3:2.1ms | T4:4.3ms | T5:5.3ms
+
+============================================================
+📊 LATENCY METRICS SUMMARY
+============================================================
+No latency data collected yet.
+📊 Status: Camera: Active | T1: 3.6ms | Clients: 1 | Frames: 97 | Press Ctrl+C to stop🎬 Frame request #97
+
+==================================================
+📊 CAPTURE STATUS (Server)
+==================================================
+  Frames: 2263 | FPS: 29.7
+  Frame size: 640x480
+  📷 T1 Capture (last): 4.48ms
+  📷 T1 Capture (avg):  4.60ms
+  ✅ Frame stored successfully
+==================================================
+
+📤 Frame #98 | T1:4.8ms | T2:0.0ms | T3:2.0ms | T4:6.7ms | T5:5.8ms
+🎬 Frame request #98
+📤 Frame #99 | T1:3.9ms | T2:0.0ms | T3:2.1ms | T4:6.1ms | T5:5.4ms
+🎬 Frame request #99
+📤 Frame #100 | T1:4.8ms | T2:0.0ms | T3:1.9ms | T4:6.7ms | T5:5.1ms
+📊 Status: Camera: Active | T1: 4.8ms | Clients: 1 | Frames: 100 | Press Ctrl+C to stop🎬 Frame request #100
+📤 Frame #101 | T1:5.1ms | T2:0.0ms | T3:2.3ms | T4:7.4ms | T5:6.1ms
+🎬 Frame request #101
+📤 Frame #102 | T1:4.7ms | T2:0.0ms | T3:1.9ms | T4:6.5ms | T5:5.0ms
+📊 Status: Camera: Active | T1: 4.6ms | Clients: 1 | Frames: 102 | Press Ctrl+C to stop🎬 Frame request #102
+📤 Frame #103 | T1:4.6ms | T2:0.0ms | T3:2.3ms | T4:6.9ms | T5:5.2ms
+
+==================================================
+📊 CAPTURE STATUS (Server)
+==================================================
+  Frames: 2323 | FPS: 29.7
+  Frame size: 640x480
+  📷 T1 Capture (last): 4.74ms
+  📷 T1 Capture (avg):  4.59ms
+  ✅ Frame stored successfully
+==================================================
+
+🎬 Frame request #103
+📤 Frame #104 | T1:4.7ms | T2:0.0ms | T3:1.9ms | T4:6.6ms | T5:5.0ms
+🎬 Frame request #104
+📤 Frame #105 | T1:3.0ms | T2:0.0ms | T3:2.0ms | T4:5.0ms | T5:6.5ms
+📊 Status: Camera: Active | T1: 3.9ms | Clients: 1 | Frames: 105 | Press Ctrl+C to stop🎬 Frame request #105
+📤 Frame #106 | T1:4.5ms | T2:0.0ms | T3:2.0ms | T4:6.5ms | T5:5.6ms
+🎬 Frame request #106
+📤 Frame #107 | T1:4.7ms | T2:0.0ms | T3:2.1ms | T4:6.8ms | T5:5.7ms
+📊 Status: Camera: Active | T1: 4.0ms | Clients: 1 | Frames: 107 | Press Ctrl+C to stop
+==================================================
+📊 CAPTURE STATUS (Server)
+==================================================
+  Frames: 2383 | FPS: 29.7
+  Frame size: 640x480
+  📷 T1 Capture (last): 3.96ms
+  📷 T1 Capture (avg):  4.56ms
+  ✅ Frame stored successfully
+==================================================
+
+🎬 Frame request #107
+📤 Frame #108 | T1:4.5ms | T2:0.0ms | T3:2.6ms | T4:7.1ms | T5:7.1ms
+🎬 Frame request #108
+📤 Frame #109 | T1:4.4ms | T2:0.0ms | T3:2.7ms | T4:7.1ms | T5:7.6ms
+📊 Status: Camera: Active | T1: 5.2ms | Clients: 1 | Frames: 109 | Press Ctrl+C to stop🎬 Frame request #109
+📤 Frame #110 | T1:4.3ms | T2:0.0ms | T3:2.7ms | T4:7.1ms | T5:7.1ms
+🎬 Frame request #110
+📤 Frame #111 | T1:4.7ms | T2:0.0ms | T3:2.8ms | T4:7.5ms | T5:8.2ms
+🎬 Frame request #111
+📤 Frame #112 | T1:4.1ms | T2:0.0ms | T3:5.2ms | T4:9.3ms | T5:7.8ms
+📊 Status: Camera: Active | T1: 4.5ms | Clients: 1 | Frames: 112 | Press Ctrl+C to stop
+==================================================
+📊 CAPTURE STATUS (Server)
+==================================================
+  Frames: 2443 | FPS: 29.8
+  Frame size: 640x480
+  📷 T1 Capture (last): 4.58ms
+  📷 T1 Capture (avg):  4.44ms
+  ✅ Frame stored successfully
+==================================================
+
+🎬 Frame request #112
+📤 Frame #113 | T1:4.5ms | T2:0.0ms | T3:2.1ms | T4:6.7ms | T5:5.5ms
+🎬 Frame request #113
+📤 Frame #114 | T1:4.5ms | T2:0.0ms | T3:2.0ms | T4:6.5ms | T5:5.7ms
+📊 Status: Camera: Active | T1: 5.1ms | Clients: 1 | Frames: 114 | Press Ctrl+C to stop🎬 Frame request #114
+📤 Frame #115 | T1:3.7ms | T2:0.0ms | T3:1.9ms | T4:5.6ms | T5:5.7ms
+🎬 Frame request #115
+📤 Frame #116 | T1:5.1ms | T2:0.0ms | T3:2.0ms | T4:7.1ms | T5:5.9ms
+🎬 Frame request #116
+📤 Frame #117 | T1:4.5ms | T2:0.0ms | T3:2.6ms | T4:7.0ms | T5:6.1ms
+📊 Status: Camera: Active | T1: 4.6ms | Clients: 1 | Frames: 117 | Press Ctrl+C to stop
+==================================================
+📊 CAPTURE STATUS (Server)
+==================================================
+  Frames: 2503 | FPS: 29.8
+  Frame size: 640x480
+  📷 T1 Capture (last): 4.17ms
+  📷 T1 Capture (avg):  4.49ms
+  ✅ Frame stored successfully
+==================================================
+
+🎬 Frame request #117
+📤 Frame #118 | T1:4.6ms | T2:0.0ms | T3:1.9ms | T4:6.5ms | T5:5.2ms
+🎬 Frame request #118
+📤 Frame #119 | T1:4.7ms | T2:0.0ms | T3:1.9ms | T4:6.7ms | T5:5.2ms
+📊 Status: Camera: Active | T1: 4.7ms | Clients: 1 | Frames: 119 | Press Ctrl+C to stop🎬 Frame request #119
+
+======================================================================
+📊 SERVER TIMING (Frame #120)
+======================================================================
+📷 T1 Capture:      4.64ms  (camera → memory)
+📏 T2 Resize:       0.01ms  (resize operation)
+🗜️ T3 Encode:       1.86ms  (JPEG compression)
+----------------------------------------------------------------------
+⚙️ T4 Total Server:   6.51ms  (T1+T2+T3)
+📤 T5 Network Send:   5.04ms  (WebSocket send)
+======================================================================
+
+📤 Frame #120 | T1:4.6ms | T2:0.0ms | T3:1.9ms | T4:6.5ms | T5:5.0ms
+🎬 Frame request #120
+📤 Frame #121 | T1:4.9ms | T2:0.0ms | T3:2.1ms | T4:7.0ms | T5:5.6ms
+🎬 Frame request #121
+📤 Frame #122 | T1:4.3ms | T2:0.0ms | T3:2.1ms | T4:6.5ms | T5:5.5ms
+
+============================================================
+📊 LATENCY METRICS SUMMARY
+============================================================
+No latency data collected yet.
+📊 Status: Camera: Active | T1: 4.5ms | Clients: 1 | Frames: 122 | Press Ctrl+C to stop
+==================================================
+📊 CAPTURE STATUS (Server)
+==================================================
+  Frames: 2563 | FPS: 29.8
+  Frame size: 640x480
+  📷 T1 Capture (last): 4.41ms
+  📷 T1 Capture (avg):  4.57ms
+  ✅ Frame stored successfully
+==================================================
+
+🎬 Frame request #122
+📤 Frame #123 | T1:8.0ms | T2:0.0ms | T3:2.0ms | T4:10.0ms | T5:5.3ms
+🎬 Frame request #123
+📤 Frame #124 | T1:4.7ms | T2:0.0ms | T3:1.9ms | T4:6.6ms | T5:5.1ms
+📊 Status: Camera: Active | T1: 5.2ms | Clients: 1 | Frames: 124 | Press Ctrl+C to stop🎬 Frame request #124
+📤 Frame #125 | T1:4.5ms | T2:0.0ms | T3:2.6ms | T4:7.1ms | T5:6.7ms
+🎬 Frame request #125
+📤 Frame #126 | T1:3.9ms | T2:0.0ms | T3:2.8ms | T4:6.8ms | T5:7.5ms
+🎬 Frame request #126
+📤 Frame #127 | T1:4.7ms | T2:0.0ms | T3:2.8ms | T4:7.5ms | T5:7.4ms
+📊 Status: Camera: Active | T1: 4.8ms | Clients: 1 | Frames: 127 | Press Ctrl+C to stop
+
+============================================================
+🛑 Shutting down servers...
+============================================================
+
+📊 FINAL LATENCY SUMMARY:
+
+============================================================
+📊 LATENCY METRICS SUMMARY
+============================================================
+No latency data collected yet.
+
+📈 OVERALL AVERAGES:
+T1 Capture          :   4.68ms (127 samples)
+Processing (Legacy) :   7.16ms (127 samples)
+
+✅ All servers stopped. Goodbye!
+============================================================
