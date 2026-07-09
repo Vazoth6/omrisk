@@ -1,14 +1,16 @@
+# src/main.py
 import sys
 import os
 
 # Add src directory to Python path
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from src.camera.device_manager import select_camera, list_cameras
+from src.camera.device_manager import select_camera
 from src.camera.capture import capture_frames
 from src.metrics.latency_tracker import latency_metrics, print_latency_summary
 from src.metrics.metrics_collector import MetricsCollector
 from src.metrics.reporters import MetricsReporter
+from src.metrics.system_monitor import SystemMonitor  # NOVO
 from src.server.http_server import run_http_server
 from src.server.streaming_server import run_websocket_server
 from src.utils.network import get_ip_address, check_port_available, get_system_info
@@ -25,11 +27,14 @@ import numpy as np
 from typing import Optional
 
 # Global frame storage (shared between threads) - USING LIST FOR MUTABILITY
-current_frame = [None]  # List wrapper for thread-safe updates
+current_frame = [None]
 frame_lock = threading.Lock()
 
 # Shared T1 capture time between capture thread and WebSocket server
-capture_t1_shared = [0.0]  # List wrapper for sharing T1 value across threads
+capture_t1_shared = [0.0]
+
+# Shared FPS capture value (NOVO)
+fps_capture_shared = [0.0]
 
 # Configuration
 SERVER_IP = get_ip_address()
@@ -44,6 +49,9 @@ html_content = get_html_content()
 # Initialize metrics components
 metrics_collector = MetricsCollector(max_history=1000)
 metrics_reporter = MetricsReporter(auto_print=True, print_interval=10)
+
+# Global connected clients set
+connected_clients = set()
 
 def main():
     global current_frame
@@ -82,12 +90,23 @@ def main():
     if not check_certificates():
         generate_self_signed_cert()
     
-    # Start camera capture in a separate thread
+    # ==========================================
+    # START SYSTEM MONITOR (NOVO)
+    # ==========================================
+    print("\n📊 Starting System Monitor")
+    print("-" * 40)
+    system_monitor = SystemMonitor(interval=1.0, max_samples=120)
+    system_monitor.start()
+    
+    # ==========================================
+    # START CAMERA CAPTURE
+    # ==========================================
     print("\nStarting Camera Capture")
     print("-" * 40)
     
     def capture_wrapper():
-        capture_frames(camera_index, current_frame, frame_lock, latency_metrics, capture_t1_shared)
+        capture_frames(camera_index, current_frame, frame_lock, latency_metrics, 
+                      capture_t1_shared, fps_capture_shared)
     
     camera_thread = threading.Thread(
         target=capture_wrapper,
@@ -100,7 +119,7 @@ def main():
     print("Waiting for camera to initialize...")
     time.sleep(2)
     
-    # CRITICAL: Wait for first frame
+    # Wait for first frame
     print("Waiting for first frame...")
     frame_timeout = 10
     start_wait = time.time()
@@ -120,24 +139,30 @@ def main():
         print("Check camera connection and permissions")
         return
     
-    # Start HTTP server in thread
+    # ==========================================
+    # START HTTP SERVER
+    # ==========================================
     print("\nStarting HTTP Server")
     print("-" * 40)
     http_thread = threading.Thread(
         target=run_http_server,
-        args=(HTTP_PORT, current_frame, frame_lock, connected_clients, latency_metrics, html_content),
+        args=(HTTP_PORT, current_frame, frame_lock, connected_clients, 
+              latency_metrics, html_content, system_monitor, fps_capture_shared),
         daemon=True,
         name="HTTP-Server"
     )
     http_thread.start()
     time.sleep(1)
     
-    # Start WebSocket server in separate thread - PASS capture_t1_shared
+    # ==========================================
+    # START WEBSOCKET SERVER
+    # ==========================================
     print("\nStarting WebSocket Server")
     print("-" * 40)
     ws_thread = threading.Thread(
         target=run_websocket_server,
-        args=(WS_PORT, current_frame, frame_lock, connected_clients, latency_metrics, capture_t1_shared),  # ADDED capture_t1_shared
+        args=(WS_PORT, current_frame, frame_lock, connected_clients, 
+              latency_metrics, capture_t1_shared),
         daemon=True,
         name="WebSocket-Server"
     )
@@ -146,7 +171,9 @@ def main():
     # Wait for servers to start
     time.sleep(2)
     
-    # Display server status
+    # ==========================================
+    # DISPLAY SERVER STATUS
+    # ==========================================
     print("\n" + "="*60)
     print("SERVERS ARE RUNNING")
     print("="*60)
@@ -159,7 +186,7 @@ def main():
     print(f"   - /         - Streaming dashboard")
     print(f"   - /debug    - Camera debug view")
     print(f"   - /health   - System health status")
-    print(f"   - /metrics  - Latency metrics (JSON)")
+    print(f"   - /metrics  - Latency metrics (JSON) - INCLUDES CPU/RAM/FPS")
     
     print("\n📈 Latency metrics will be displayed:")
     print("   📷 T1 - Capture time (camera to memory)")
@@ -173,6 +200,11 @@ def main():
     print("   🎨 T9 - Overlay draw time")
     print("   🖥️ T10 - Display render time")
     print("   📊 TOTAL - End-to-end latency")
+    
+    print("\n📊 System metrics:")
+    print("   💻 CPU: Average and peak usage")
+    print("   🧠 RAM: Average and peak usage")
+    print("   🎬 FPS: Capture and transmission rates")
     
     print("\n🛑 Press Ctrl+C to stop all servers")
     print("="*60)
@@ -193,26 +225,37 @@ def main():
                 print_latency_summary()
                 last_summary_time = current_time
                 
-            # Display status with T1 value
+            # Display status with T1 and FPS values
             with frame_lock:
                 frame_status = "Active" if current_frame[0] is not None else "No frame"
             
             current_t1 = capture_t1_shared[0] if capture_t1_shared[0] > 0 else 0
+            current_fps = fps_capture_shared[0] if fps_capture_shared else 0
             
-            print(f"\r📊 Status: Camera: {frame_status} | T1: {current_t1:.1f}ms | "
+            # Get system stats
+            stats = system_monitor.get_stats()
+            cpu = stats['cpu']['current']
+            ram = stats['ram']['current']
+            
+            print(f"\r📊 Status: Camera: {frame_status} | "
+                  f"T1: {current_t1:.1f}ms | "
+                  f"FPS: {current_fps:.1f} | "
+                  f"CPU: {cpu:.1f}% | "
+                  f"RAM: {ram:.0f}MB | "
                   f"Clients: {len(connected_clients)} | "
-                  f"Frames: {len(latency_metrics['t1_capture'])} | Press Ctrl+C to stop", end="")
+                  f"Press Ctrl+C to stop", end="")
                   
     except KeyboardInterrupt:
         print("\n\n" + "="*60)
         print("🛑 Shutting down servers...")
         print("="*60)
         
-        # Print final summary
+        # ==========================================
+        # PRINT FINAL STATISTICS
+        # ==========================================
         print("\n📊 FINAL LATENCY SUMMARY:")
         print_latency_summary()
         
-        # Calculate and print averages for all metrics
         print("\n📈 OVERALL AVERAGES:")
         metric_names = {
             't1_capture': 'T1 Capture',
@@ -229,9 +272,25 @@ def main():
                 avg = sum(values) / len(values)
                 print(f"{metric_name:20s}: {avg:6.2f}ms ({len(values)} samples)")
         
+        # ==========================================
+        # PRINT SYSTEM STATISTICS (NOVO)
+        # ==========================================
+        stats = system_monitor.get_stats()
+        print("\n📊 SYSTEM STATISTICS:")
+        print(f"  CPU Average: {stats['cpu']['avg']:.1f}%")
+        print(f"  CPU Peak:    {stats['cpu']['max']:.1f}%")
+        print(f"  RAM Average: {stats['ram']['avg']:.1f} MB")
+        print(f"  RAM Peak:    {stats['ram']['max']:.1f} MB")
+        print(f"  RAM Total:   {stats['ram']['total_mb']:.1f} MB")
+        print(f"  Samples:     {stats['cpu']['samples']}")
+        
+        print(f"\n  FPS Capture:    {fps_capture_shared[0]:.1f}")
+        
         # Cleanup
         with frame_lock:
             current_frame[0] = None
+        
+        system_monitor.stop()
         
         print("\n✅ All servers stopped. Goodbye!")
         print("="*60)
@@ -241,22 +300,21 @@ def main():
         import traceback
         traceback.print_exc()
 
-# Global connected clients set (needed for the servers)
-connected_clients = set()
-
 if __name__ == "__main__":
-    # Required packages installation reminder
     required_packages = [
         "websockets",
         "opencv-python",
-        "numpy"
+        "numpy",
+        "psutil"  # NOVO
     ]
     
     print("Required Python packages:")
     for pkg in required_packages:
         print(f"  • {pkg}")
     
-    print("\nInstall with: pip install websockets opencv-python numpy")
+    print("\nInstall with:")
+    print("  sudo apt install python3-psutil  # For psutil")
+    print("  pip install websockets opencv-python numpy  # In virtual environment")
     print("="*60)
     
     # Check for V4L2 utilities

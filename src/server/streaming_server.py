@@ -11,31 +11,29 @@ import numpy as np
 import traceback
 from collections import deque
 
-# Simple timestamp function without error handling issues
 def add_timestamp_to_frame(frame, timestamp_ns):
     """Add timestamp as text overlay to frame"""
     try:
         frame_copy = frame.copy()
         timestamp_ms = timestamp_ns // 1_000_000
-        #cv2.putText(frame_copy, f"TS:{timestamp_ms}", (10, 30),
+        # cv2.putText(frame_copy, f"TS:{timestamp_ms}", (10, 30),
         #            cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 255, 0), 2)
         return frame_copy
     except Exception as e:
         print(f"Error adding timestamp: {e}")
         return frame
 
-async def ws_handler(websocket, current_frame, frame_lock, latency_metrics, clients_set, capture_t1_shared=None):
+async def ws_handler(websocket, current_frame, frame_lock, latency_metrics, 
+                     clients_set, capture_t1_shared=None):
     """WebSocket handler with complete server-side timing"""
     client_addr = None
     try:
         client_addr = websocket.remote_address
         print(f"✅ Client connected from {client_addr}")
         
-        # Add client to set
         clients_set.add(websocket)
         print(f"👥 Total clients: {len(clients_set)}")
         
-        # Send a welcome message
         try:
             await websocket.send(json.dumps({"type": "welcome", "message": "Connected to video stream server"}))
             print("📤 Sent welcome message")
@@ -44,19 +42,20 @@ async def ws_handler(websocket, current_frame, frame_lock, latency_metrics, clie
         
         client_metrics = {
             'frame_count': 0,
-            'last_print_time': time.time()
+            'fps_frame_count': 0,
+            'last_fps_update': time.time(),
+            'fps': 0.0
         }
         
         # Server timing storage
         server_timings = {
-            't1_capture': deque(maxlen=100),      # From capture thread
-            't2_resize': deque(maxlen=100),       # Resize operation
-            't3_encode': deque(maxlen=100),       # JPEG encode
-            't4_total_server': deque(maxlen=100), # T1 + T2 + T3
-            't5_network_send': deque(maxlen=100)  # WebSocket send
+            't1_capture': deque(maxlen=100),
+            't2_resize': deque(maxlen=100),
+            't3_encode': deque(maxlen=100),
+            't4_total_server': deque(maxlen=100),
+            't5_network_send': deque(maxlen=100)
         }
         
-        # Main message loop
         async for message in websocket:
             try:
                 data = json.loads(message)
@@ -64,7 +63,6 @@ async def ws_handler(websocket, current_frame, frame_lock, latency_metrics, clie
                 if data.get("type") == "request_frame":
                     print(f"🎬 Frame request #{client_metrics['frame_count']}")
                     
-                    # Check if frame exists
                     with frame_lock:
                         if isinstance(current_frame, list):
                             frame_available = current_frame[0] is not None
@@ -89,7 +87,7 @@ async def ws_handler(websocket, current_frame, frame_lock, latency_metrics, clie
                         # ==========================================
                         t1_capture_ms = 0
                         if capture_t1_shared and isinstance(capture_t1_shared, list):
-                            t1_capture_ms = capture_t1_shared[0]  # Get latest capture time
+                            t1_capture_ms = capture_t1_shared[0]
                         server_timings['t1_capture'].append(t1_capture_ms)
                         
                         # ==========================================
@@ -97,10 +95,8 @@ async def ws_handler(websocket, current_frame, frame_lock, latency_metrics, clie
                         # ==========================================
                         t2_start = time.perf_counter_ns()
                         
-                        # Get timestamp
                         server_timestamp_ms = int(time.time() * 1000)
                         
-                        # Resize frame
                         height, width = current_frame_data.shape[:2]
                         max_dimension = 1280
                         if width > max_dimension:
@@ -114,7 +110,6 @@ async def ws_handler(websocket, current_frame, frame_lock, latency_metrics, clie
                         t2_resize_time = (time.perf_counter_ns() - t2_start) / 1_000_000
                         server_timings['t2_resize'].append(t2_resize_time)
                         
-                        # Add timestamp
                         frame_with_ts = add_timestamp_to_frame(frame_resized, server_timestamp_ms * 1_000_000)
                         
                         # ==========================================
@@ -143,34 +138,37 @@ async def ws_handler(websocket, current_frame, frame_lock, latency_metrics, clie
                         # ==========================================
                         t5_start = time.perf_counter_ns()
                         
-                        # Prepare response with ALL server timings
                         response = {
                             'metadata': {
                                 'server_timestamp_ms': server_timestamp_ms,
-                                't1_capture_ms': t1_capture_ms,      # From capture thread
-                                't2_resize_ms': t2_resize_time,       # Resize only
-                                't3_encode_ms': t3_encode_time,       # Encode only
-                                't4_total_server_ms': t4_total_server, # Complete server processing
+                                't1_capture_ms': t1_capture_ms,
+                                't2_resize_ms': t2_resize_time,
+                                't3_encode_ms': t3_encode_time,
+                                't4_total_server_ms': t4_total_server,
                                 'frame_index': client_metrics['frame_count']
                             },
                             'image_data': buffer.tobytes().hex()
                         }
                         
-                        # Send frame via WebSocket
                         await websocket.send(json.dumps(response))
                         
                         t5_network_time = (time.perf_counter_ns() - t5_start) / 1_000_000
                         server_timings['t5_network_send'].append(t5_network_time)
                         
-                        # ==========================================
-                        # UPDATE METRICS AND PRINT STATUS
-                        # ==========================================
-                        
-                        # Update latency_metrics for compatibility
+                        # Update metrics
                         latency_metrics['t1_capture'].append(t1_capture_ms)
-                        latency_metrics['t2_processing'].append(t4_total_server)  # Keep for backward compat
+                        latency_metrics['t2_processing'].append(t4_total_server)
                         
                         client_metrics['frame_count'] += 1
+                        client_metrics['fps_frame_count'] += 1
+                        
+                        # Update client FPS
+                        current_time = time.time()
+                        if current_time - client_metrics['last_fps_update'] >= 1.0:
+                            client_metrics['fps'] = client_metrics['fps_frame_count'] / (current_time - client_metrics['last_fps_update'])
+                            client_metrics['fps_frame_count'] = 0
+                            client_metrics['last_fps_update'] = current_time
+                            print(f"📊 Client FPS: {client_metrics['fps']:.1f}")
                         
                         # Print detailed server timing every 30 frames
                         if client_metrics['frame_count'] % 30 == 0:
@@ -185,7 +183,7 @@ async def ws_handler(websocket, current_frame, frame_lock, latency_metrics, clie
                             print(f"📤 T5 Network Send: {t5_network_time:6.2f}ms  (WebSocket send)")
                             print(f"{'='*70}\n")
                         
-                        # Also print simple status every frame
+                        # Simple status every frame
                         print(f"📤 Frame #{client_metrics['frame_count']} | "
                               f"T1:{t1_capture_ms:.1f}ms | "
                               f"T2:{t2_resize_time:.1f}ms | "
@@ -202,7 +200,6 @@ async def ws_handler(websocket, current_frame, frame_lock, latency_metrics, clie
                         }))
                 
                 elif data.get("type") == "latency_report":
-                    # Receive client-side metrics
                     report = data.get("data", {})
                     print(f"📊 Client Latency Report:")
                     print(f"   T6 Network Rx: {report.get('t3_network', 0):.1f}ms")
@@ -211,7 +208,6 @@ async def ws_handler(websocket, current_frame, frame_lock, latency_metrics, clie
                     print(f"   T9 Draw:       {report.get('t6_draw', 0):.1f}ms")
                     print(f"   T10 Display:   {report.get('t7_rendering', 0):.1f}ms")
                     
-                    # Store in metrics
                     for metric in ['t3_network', 't4_decoding', 't5_yolo', 't6_draw', 't7_rendering', 'total']:
                         if metric in report:
                             latency_metrics[metric].append(report[metric])
@@ -232,12 +228,12 @@ async def ws_handler(websocket, current_frame, frame_lock, latency_metrics, clie
             clients_set.remove(websocket)
             print(f"👋 Client removed. Total clients: {len(clients_set)}")
 
-async def start_websocket_server(ws_port, current_frame, frame_lock, latency_metrics, connected_clients, capture_t1_shared=None):
+async def start_websocket_server(ws_port, current_frame, frame_lock, latency_metrics, 
+                                 connected_clients, capture_t1_shared=None):
     """Start WebSocket server"""
     print(f"\n🚀 Starting WebSocket server on port {ws_port}...")
     
     try:
-        # SSL setup (optional)
         ssl_context = None
         cert_path = "certs/certTwo.pem"
         key_path = "certs/keyTwo.pem"
@@ -249,12 +245,10 @@ async def start_websocket_server(ws_port, current_frame, frame_lock, latency_met
         else:
             print("⚠️ SSL disabled - using ws:// (browser may show warnings)")
         
-        # Create handler with capture_t1_shared
         async def handler(websocket):
             await ws_handler(websocket, current_frame, frame_lock, latency_metrics, 
                            connected_clients, capture_t1_shared)
         
-        # Start server
         async with websockets.serve(
             handler, 
             '0.0.0.0',
@@ -270,7 +264,6 @@ async def start_websocket_server(ws_port, current_frame, frame_lock, latency_met
             print(f"✅ WebSocket server running on {protocol}://{server_ip}:{ws_port}")
             print(f"🔄 Waiting for connections...")
             
-            # Keep running forever
             await asyncio.Future()
                     
     except OSError as e:
@@ -284,11 +277,11 @@ async def start_websocket_server(ws_port, current_frame, frame_lock, latency_met
         print(f"❌ Server error: {e}")
         traceback.print_exc()
 
-def run_websocket_server(ws_port, current_frame, frame_lock, connected_clients, latency_metrics, capture_t1_shared=None):
+def run_websocket_server(ws_port, current_frame, frame_lock, connected_clients, 
+                        latency_metrics, capture_t1_shared=None):
     """Run WebSocket server in its own event loop"""
     print("🔵 Starting WebSocket thread...")
     
-    # Create new event loop
     loop = asyncio.new_event_loop()
     asyncio.set_event_loop(loop)
     

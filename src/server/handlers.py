@@ -5,10 +5,11 @@ import cv2
 from http.server import BaseHTTPRequestHandler
 from src.web import get_static_file, get_mime_type
 
-# Global variables for handler context (simpler approach)
+# Global variables for handler context
 _handler_context = {}
 
-def set_handler_context(current_frame, frame_lock, connected_clients, latency_metrics, html_content):
+def set_handler_context(current_frame, frame_lock, connected_clients, latency_metrics, 
+                        html_content, system_monitor=None, fps_capture_shared=None):
     """Set the global context for the handler"""
     global _handler_context
     _handler_context = {
@@ -16,7 +17,9 @@ def set_handler_context(current_frame, frame_lock, connected_clients, latency_me
         'frame_lock': frame_lock,
         'connected_clients': connected_clients,
         'latency_metrics': latency_metrics,
-        'html_content': html_content
+        'html_content': html_content,
+        'system_monitor': system_monitor,  # NOVO
+        'fps_capture_shared': fps_capture_shared  # NOVO
     }
 
 class SimpleHTTPRequestHandler(BaseHTTPRequestHandler):
@@ -51,10 +54,8 @@ class SimpleHTTPRequestHandler(BaseHTTPRequestHandler):
             current_frame_container = _handler_context.get('current_frame')
             frame_lock = _handler_context.get('frame_lock')
             
-            # CRITICAL FIX: Check if current_frame is a list and get the first element
             if current_frame_container is not None and frame_lock:
                 with frame_lock:
-                    # Handle both list container and direct frame for backward compatibility
                     if isinstance(current_frame_container, list):
                         frame = current_frame_container[0]
                     else:
@@ -81,7 +82,6 @@ class SimpleHTTPRequestHandler(BaseHTTPRequestHandler):
             self.end_headers()
             
             current_frame_container = _handler_context.get('current_frame')
-            # Check if frame exists (handle list container)
             frame_exists = False
             if current_frame_container is not None:
                 if isinstance(current_frame_container, list):
@@ -104,16 +104,19 @@ class SimpleHTTPRequestHandler(BaseHTTPRequestHandler):
             self.send_header("Content-type", "application/json")
             self.end_headers()
             
+            # ==========================================
+            # LATENCY METRICS
+            # ==========================================
             metrics_stats = {}
             latency_metrics = _handler_context.get('latency_metrics', {})
             for metric, values in latency_metrics.items():
                 if values:
                     metrics_stats[metric] = {
                         "samples": len(values),
-                        "avg": sum(values) / len(values),
-                        "min": min(values),
-                        "max": max(values),
-                        "last_10_avg": sum(values[-10:]) / min(10, len(values)) if values else 0
+                        "avg": round(sum(values) / len(values), 2),
+                        "min": round(min(values), 2),
+                        "max": round(max(values), 2),
+                        "last_10_avg": round(sum(values[-10:]) / min(10, len(values)), 2) if values else 0
                     }
             
             current_frame_container = _handler_context.get('current_frame')
@@ -124,9 +127,32 @@ class SimpleHTTPRequestHandler(BaseHTTPRequestHandler):
                 else:
                     frame_exists = current_frame_container is not None
             
+            # ==========================================
+            # SYSTEM METRICS (NOVO)
+            # ==========================================
+            system_stats = {}
+            system_monitor = _handler_context.get('system_monitor')
+            if system_monitor:
+                system_stats = system_monitor.get_stats()
+            
+            # ==========================================
+            # FPS METRICS (NOVO)
+            # ==========================================
+            fps_capture = 0
+            fps_shared = _handler_context.get('fps_capture_shared')
+            if fps_shared and isinstance(fps_shared, list):
+                fps_capture = round(fps_shared[0], 1)
+            
+            # ==========================================
+            # BUILD RESPONSE
+            # ==========================================
             metrics_data = {
                 "timestamp": time.time(),
                 "metrics": metrics_stats,
+                "system": system_stats,
+                "fps": {
+                    "capture": fps_capture,
+                },
                 "connected_clients": len(_handler_context.get('connected_clients', set())),
                 "current_frame": frame_exists
             }
@@ -138,7 +164,9 @@ class SimpleHTTPRequestHandler(BaseHTTPRequestHandler):
     def log_message(self, format, *args):
         pass
 
-def create_handler_with_context(current_frame, frame_lock, connected_clients, latency_metrics, html_content):
+def create_handler_with_context(current_frame, frame_lock, connected_clients, latency_metrics, 
+                                html_content, system_monitor=None, fps_capture_shared=None):
     """Create a handler with the required context"""
-    set_handler_context(current_frame, frame_lock, connected_clients, latency_metrics, html_content)
+    set_handler_context(current_frame, frame_lock, connected_clients, latency_metrics, 
+                        html_content, system_monitor, fps_capture_shared)
     return SimpleHTTPRequestHandler

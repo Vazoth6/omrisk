@@ -5,13 +5,16 @@ from http.server import HTTPServer
 from .handlers import create_handler_with_context
 from src.utils.ssl_helper import generate_self_signed_cert
 
-def run_http_server(http_port, current_frame, frame_lock, connected_clients, latency_metrics, html_content):
+def run_http_server(http_port, current_frame, frame_lock, connected_clients, 
+                    latency_metrics, html_content, system_monitor=None, 
+                    fps_capture_shared=None):
     """Run HTTP server with SSL"""
-    server_address = ('0.0.0.0', http_port)  # Listen on all interfaces
+    server_address = ('0.0.0.0', http_port)
     
-    # Create handler with context
+    # Create handler with context including system_monitor and fps_capture_shared
     handler_class = create_handler_with_context(
-        current_frame, frame_lock, connected_clients, latency_metrics, html_content
+        current_frame, frame_lock, connected_clients, latency_metrics, 
+        html_content, system_monitor, fps_capture_shared
     )
     
     httpd = HTTPServer(server_address, handler_class)
@@ -19,7 +22,6 @@ def run_http_server(http_port, current_frame, frame_lock, connected_clients, lat
     # SSL wrapping
     context = ssl.SSLContext(ssl.PROTOCOL_TLS_SERVER)
     
-    # Try to load certificates
     cert_file = "certs/certTwo.pem"
     key_file = "certs/keyTwo.pem"
     
@@ -32,13 +34,12 @@ def run_http_server(http_port, current_frame, frame_lock, connected_clients, lat
         context.load_cert_chain(certfile=cert_file, keyfile=key_file)
         httpd.socket = context.wrap_socket(httpd.socket, server_side=True)
         
-        # Get server IP for display
         from src.utils.network import get_ip_address
         server_ip = get_ip_address()
         
         print(f"\n✅ HTTPS server: Running at https://{server_ip}:{http_port}")
         print(f"   Also available at: https://localhost:{http_port}")
-        print(f"   Metrics endpoint: https://{server_ip}:{http_port}/metrics")
+        print(f"   Metrics endpoint: https://{server_ip}:{http_port}/metrics (includes CPU/RAM/FPS)")
         httpd.serve_forever()
     except Exception as e:
         print(f"❌ Failed to start HTTPS server: {e}")

@@ -2,9 +2,10 @@
 import cv2
 import time
 import numpy as np
-from typing import Optional
+from typing import Optional, List
 
-def capture_frames(camera_index, current_frame, frame_lock, latency_metrics, capture_t1_shared):
+def capture_frames(camera_index, current_frame, frame_lock, latency_metrics, 
+                   capture_t1_shared, fps_shared=None):
     """
     Capture frames from the selected camera with latency measurement
     
@@ -14,15 +15,14 @@ def capture_frames(camera_index, current_frame, frame_lock, latency_metrics, cap
         frame_lock: Lock for thread-safe frame access
         latency_metrics: Dictionary to store latency metrics
         capture_t1_shared: List to share T1 capture time with WebSocket server
+        fps_shared: Optional list to share FPS value with other modules
     """
     print(f"\nInitializing camera {camera_index}...")
     
     # Use V4L2 for Linux
     if isinstance(camera_index, str) and camera_index.startswith('/dev/video'):
-        # It's a device path
         cap = cv2.VideoCapture(camera_index, cv2.CAP_V4L2)
     else:
-        # It's a numeric index
         cap = cv2.VideoCapture(camera_index, cv2.CAP_V4L2)
     
     if not cap.isOpened():
@@ -50,6 +50,8 @@ def capture_frames(camera_index, current_frame, frame_lock, latency_metrics, cap
     frame_count = 0
     start_time = time.time()
     last_print_time = time.time()
+    last_fps_update = time.time()
+    fps_frame_count = 0
     
     # Store T1 values for statistics
     t1_values = []
@@ -71,19 +73,28 @@ def capture_frames(camera_index, current_frame, frame_lock, latency_metrics, cap
             
             # SHARE T1 WITH WEBSOCKET SERVER
             if capture_t1_shared is not None:
-                capture_t1_shared[0] = t1_capture  # Update shared value
+                capture_t1_shared[0] = t1_capture
             
             # Store T1 for statistics
             t1_values.append(t1_capture)
             if len(t1_values) > 100:
                 t1_values.pop(0)
             
-            # CRITICAL FIX: Store frame with lock using list index assignment
+            # Store frame with lock using list index assignment
             with frame_lock:
-                # Since current_frame is a list, assign to index 0
                 current_frame[0] = frame.copy()
             
             frame_count += 1
+            fps_frame_count += 1
+            
+            # Update shared FPS every second
+            current_time = time.time()
+            if current_time - last_fps_update >= 1.0:
+                fps_calc = fps_frame_count / (current_time - last_fps_update)
+                if fps_shared is not None and isinstance(fps_shared, list):
+                    fps_shared[0] = fps_calc
+                fps_frame_count = 0
+                last_fps_update = current_time
             
             # Print periodic status
             current_time = time.time()
@@ -114,7 +125,7 @@ def capture_frames(camera_index, current_frame, frame_lock, latency_metrics, cap
                 last_print_time = current_time
             
             # Small delay to prevent CPU overuse
-            time.sleep(max(0, (1.0/fps) - 0.005))  # Aim for target FPS
+            time.sleep(max(0, (1.0/fps) - 0.005))
             
     except KeyboardInterrupt:
         print("\nCapture stopped by user")
