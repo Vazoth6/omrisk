@@ -1,4 +1,3 @@
-# src/metrics/reporters.py
 import time
 import csv
 import json
@@ -7,151 +6,173 @@ from datetime import datetime
 from .latency_tracker import latency_metrics, print_latency_summary
 
 class MetricsReporter:
-    """Handles reporting and exporting of metrics"""
+    """
+    Responsável pela geração de relatórios e exportação de métricas.
+    Esta classe fornece funcionalidades para imprimir, exportar e gerar relatórios
+    a partir dos dados de latência recolhidos.
+    """
     
     def __init__(self, auto_print: bool = True, print_interval: int = 10):
         """
-        Initialize the metrics reporter
-        
+        Inicializa o gerador de relatórios de métricas.
+
         Args:
-            auto_print: Whether to automatically print summaries
-            print_interval: Interval in seconds between auto-prints
+            auto_print: Se True, imprime resumos automaticamente
+            print_interval: Intervalo em segundos entre impressões automáticas
         """
-        self.auto_print = auto_print
-        self.print_interval = print_interval
-        self.last_print_time = time.time()
+        self.auto_print = auto_print  # Ativa/desativa a impressão automática
+        self.print_interval = print_interval  # Intervalo entre impressões
+        self.last_print_time = time.time()  # Tempo da última impressão
         
     def print_summary(self):
-        """Print latency summary"""
+        """
+        Imprime um resumo das métricas de latência.
+        Utiliza a função print_latency_summary do módulo latency_tracker.
+        """
         print_latency_summary()
     
     def print_averages(self):
-        """Print overall averages for all metrics"""
-        print("\n📈 OVERALL AVERAGES:")
+        """
+        Imprime as médias globais de todas as métricas.
+        Útil para obter uma visão geral do desempenho do sistema.
+        """
+        print("\nMÉDIAS GERAIS:")
+        # Itera sobre todas as métricas
         for metric, values in latency_metrics.items():
-            if values:
-                avg = sum(values) / len(values)
-                print(f"{metric.upper():15s}: {avg:6.2f}ms ({len(values)} samples)")
+            if values:  # Se existirem valores
+                avg = sum(values) / len(values)  # Calcula a média
+                print(f"{metric.upper():15s}: {avg:6.2f}ms ({len(values)} amostras)")
     
     def export_to_csv(self, filename: Optional[str] = None) -> str:
         """
-        Export metrics to CSV file
-        
+        Exporta as métricas para um ficheiro CSV.
+
         Args:
-            filename: Output filename (auto-generated if None)
-        
+            filename: Nome do ficheiro de saída (gerado automaticamente se None)
+
         Returns:
-            Path to the created CSV file
+            str: Caminho do ficheiro CSV criado
         """
+        # Se não foi fornecido nome, gera um com timestamp
         if not filename:
             timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
             filename = f"latency_metrics_{timestamp}.csv"
         
-        # Find maximum length of all metric lists
+        # Encontra o comprimento máximo de todas as listas de métricas
         max_length = max([len(values) for values in latency_metrics.values()]) if latency_metrics else 0
         
+        # Abre o ficheiro para escrita
         with open(filename, 'w', newline='') as csvfile:
             writer = csv.writer(csvfile)
             
-            # Write header
+            # Escreve o cabeçalho (nomes das métricas)
             headers = ['frame_index'] + list(latency_metrics.keys())
             writer.writerow(headers)
             
-            # Write data rows
+            # Escreve os dados linha por linha (cada linha corresponde a um frame)
             for i in range(max_length):
-                row = [i + 1]  # frame index (1-based)
+                row = [i + 1]  # Índice do frame (baseado em 1)
                 for metric in latency_metrics.keys():
                     if i < len(latency_metrics[metric]):
-                        row.append(f"{latency_metrics[metric][i]:.2f}")
+                        row.append(f"{latency_metrics[metric][i]:.2f}")  # Valor com 2 casas decimais
                     else:
-                        row.append('')
+                        row.append('')  # Campo vazio se não houver valor
                 writer.writerow(row)
         
-        print(f"✅ Metrics exported to: {filename}")
+        print(f"As métricas exportadas para: {filename}")
         return filename
     
     def export_to_json(self, filename: Optional[str] = None) -> str:
         """
-        Export metrics to JSON file
-        
+        Exporta as métricas para um ficheiro JSON.
+
         Args:
-            filename: Output filename (auto-generated if None)
-        
+            filename: Nome do ficheiro de saída (gerado automaticamente se None)
+
         Returns:
-            Path to the created JSON file
+            str: Caminho do ficheiro JSON criado
         """
+        # Se não foi fornecido nome, gera um com timestamp
         if not filename:
             timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
             filename = f"latency_metrics_{timestamp}.json"
         
+        # Estrutura de dados para exportação
         export_data = {
-            'export_time': datetime.now().isoformat(),
-            'metrics': {}
+            'export_time': datetime.now().isoformat(),  # Data/hora da exportação
+            'metrics': {}  # Dicionário para as métricas
         }
         
+        # Itera sobre todas as métricas
         for metric_name, values in latency_metrics.items():
-            if values:
+            if values:  # Se existirem valores
                 export_data['metrics'][metric_name] = {
-                    'samples': len(values),
-                    'values': values,
-                    'avg': sum(values) / len(values),
-                    'min': min(values),
-                    'max': max(values)
+                    'samples': len(values),          # Número de amostras
+                    'values': values,                # Todos os valores
+                    'avg': sum(values) / len(values),  # Média
+                    'min': min(values),              # Mínimo
+                    'max': max(values)               # Máximo
                 }
         
+        # Guarda o ficheiro JSON com indentação para legibilidade
         with open(filename, 'w') as f:
             json.dump(export_data, f, indent=2)
         
-        print(f"✅ Metrics exported to: {filename}")
+        print(f"As métricas exportadas para: {filename}")
         return filename
     
     def auto_report_loop(self, callback: Optional[Callable] = None):
         """
-        Run auto-reporting loop (meant to be called in a thread)
-        
+        Executa um loop de relatórios automáticos (para ser chamado numa thread).
+
         Args:
-            callback: Optional callback function to call on each report
+            callback: Função de callback opcional a chamar em cada relatório
         """
         try:
             while True:
                 current_time = time.time()
+                # Verifica se já passou o intervalo desde a última impressão
                 if current_time - self.last_print_time >= self.print_interval:
-                    self.print_summary()
-                    self.last_print_time = current_time
+                    self.print_summary()  # Imprime o resumo
+                    self.last_print_time = current_time  # Atualiza o tempo
                     
+                    # Se foi fornecido um callback, executa-o
                     if callback:
                         callback()
                 
-                time.sleep(1)
+                time.sleep(1)  # Aguarda 1 segundo antes da próxima verificação
         except KeyboardInterrupt:
-            print("\nAuto-reporting stopped")
+            print("\nRelatório automático interrompido")  # Interrompido pelo utilizador
     
     def generate_html_report(self, filename: Optional[str] = None) -> str:
         """
-        Generate an HTML report from metrics
-        
+        Gera um relatório HTML a partir das métricas.
+
         Args:
-            filename: Output filename (auto-generated if None)
-        
+            filename: Nome do ficheiro de saída (gerado automaticamente se None)
+
         Returns:
-            Path to the created HTML file
+            str: Caminho do ficheiro HTML criado
         """
+        # Se não foi fornecido nome, gera um com timestamp
         if not filename:
             timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
             filename = f"latency_report_{timestamp}.html"
         
-        # Calculate statistics
+        # Calcula as estatísticas para cada métrica
         stats = {}
         for metric, values in latency_metrics.items():
-            if values:
+            if values:  # Se existirem valores
                 stats[metric] = {
-                    'avg': sum(values) / len(values),
-                    'min': min(values),
-                    'max': max(values),
-                    'samples': len(values)
+                    'avg': sum(values) / len(values),  # Média
+                    'min': min(values),                # Mínimo
+                    'max': max(values),                # Máximo
+                    'samples': len(values)             # Número de amostras
                 }
         
-        # Generate HTML content
+        # ============================================================
+        # GERAÇÃO DO CONTEÚDO HTML
+        # ============================================================
         html_content = f"""<!DOCTYPE html>
 <html>
 <head>
@@ -212,6 +233,7 @@ class MetricsReporter:
         <div class="stats-grid">
 """
         
+        # Adiciona um cartão de estatísticas para cada métrica
         for metric, stat in stats.items():
             html_content += f"""
             <div class="stat-card">
@@ -222,6 +244,7 @@ class MetricsReporter:
             </div>
 """
         
+        # Fecha o conteúdo HTML
         html_content += f"""
         </div>
         <div class="timestamp">
@@ -232,8 +255,9 @@ class MetricsReporter:
 </html>
 """
         
+        # Guarda o ficheiro HTML
         with open(filename, 'w') as f:
             f.write(html_content)
         
-        print(f"✅ HTML report generated: {filename}")
+        print(f"Relatório HTML gerado: {filename}")
         return filename

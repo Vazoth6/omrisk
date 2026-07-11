@@ -1,6 +1,6 @@
 # src/metrics/__init__.py
 """
-Metrics module for latency tracking and reporting
+Módulo de métricas para rastreio e relatórios de latência
 """
 
 from .latency_tracker import latency_metrics, print_latency_summary, reset_metrics, get_metric_statistics, get_all_metrics_summary

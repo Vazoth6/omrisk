@@ -1,6 +1,5 @@
 """
-OMRisk Video Streaming Server
-A comprehensive video streaming solution with latency measurement
+Servidor de streaming de vídeo OmRisk
 """
 
 __version__ = "1.0.0"

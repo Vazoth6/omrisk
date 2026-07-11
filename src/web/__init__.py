@@ -1,24 +1,29 @@
-# src/web/__init__.py
 """
-Web module for static files and templates
+Módulo web para ficheiros estáticos e modelos.
 """
 
 import os
 from typing import Optional
 
+
 def get_html_content() -> str:
     """
-    Get the HTML content for the streaming dashboard
-    
-    Returns:
-        HTML content as string
+    Obtém o conteúdo HTML para o dashboard de streaming.
+
+    Retorna:
+        str: Conteúdo HTML como string.
+             Se o ficheiro template não for encontrado, retorna uma mensagem de erro.
     """
+    # Constrói o caminho completo para o ficheiro index.html
     html_path = os.path.join(os.path.dirname(__file__), 'templates', 'index.html')
+    
+    # Verifica se o ficheiro existe
     if os.path.exists(html_path):
+        # Lê e retorna o conteúdo do ficheiro HTML
         with open(html_path, 'r', encoding='utf-8') as f:
             return f.read()
     else:
-        # Fallback to error message if template not found
+        # Fallback: mensagem de erro se o template não for encontrado
         return """<!DOCTYPE html>
 <html>
 <head><title>Error</title></head>
@@ -28,47 +33,60 @@ def get_html_content() -> str:
 </body>
 </html>"""
 
+
 def get_static_file(filepath: str) -> Optional[bytes]:
     """
-    Get a static file's content
-    
+    Obtém o conteúdo de um ficheiro estático.
+
     Args:
-        filepath: Relative path to static file (e.g., 'css/style.css')
-    
+        filepath: Caminho relativo para o ficheiro estático (ex: 'css/style.css')
+
     Returns:
-        File content as bytes, or None if not found
+        Optional[bytes]: Conteúdo do ficheiro como bytes, ou None se não for encontrado
     """
+    # Constrói o caminho completo para o ficheiro estático
     static_path = os.path.join(os.path.dirname(__file__), 'static', filepath)
+    
+    # Verifica se o ficheiro existe e é um ficheiro regular
     if os.path.exists(static_path) and os.path.isfile(static_path):
+        # Lê e retorna o conteúdo do ficheiro em modo binário
         with open(static_path, 'rb') as f:
             return f.read()
-    return None
+    
+    return None  # Retorna None se o ficheiro não for encontrado
+
 
 def get_mime_type(filepath: str) -> str:
     """
-    Get MIME type for a static file
-    
-    Args:
-        filepath: File path or extension
-    
-    Returns:
-        MIME type string
-    """
-    if filepath.endswith('.css'):
-        return 'text/css'
-    elif filepath.endswith('.js'):
-        return 'application/javascript'
-    elif filepath.endswith('.html'):
-        return 'text/html'
-    elif filepath.endswith('.png'):
-        return 'image/png'
-    elif filepath.endswith('.jpg') or filepath.endswith('.jpeg'):
-        return 'image/jpeg'
-    elif filepath.endswith('.svg'):
-        return 'image/svg+xml'
-    else:
-        return 'text/plain'
+    Determina o tipo MIME de um ficheiro estático com base na sua extensão.
 
+    Args:
+        filepath: Caminho ou extensão do ficheiro
+
+    Returns:
+        str: String do tipo MIME correspondente ao ficheiro
+    """
+    # Verifica a extensão do ficheiro e retorna o tipo MIME apropriado
+    if filepath.endswith('.css'):
+        return 'text/css'  # Folhas de estilo CSS
+    elif filepath.endswith('.js'):
+        return 'application/javascript'  # Ficheiros JavaScript
+    elif filepath.endswith('.html'):
+        return 'text/html'  # Páginas HTML
+    elif filepath.endswith('.png'):
+        return 'image/png'  # Imagens PNG
+    elif filepath.endswith('.jpg') or filepath.endswith('.jpeg'):
+        return 'image/jpeg'  # Imagens JPEG
+    elif filepath.endswith('.svg'):
+        return 'image/svg+xml'  # Imagens SVG
+    else:
+        return 'text/plain'  # Tipo MIME padrão para outros ficheiros
+
+
+# ============================================================
+# EXPORTAÇÃO DE SÍMBOLOS PÚBLICOS
+# ============================================================
+# Lista de funções que podem ser importadas por outros módulos
 __all__ = [
     'get_html_content',
     'get_static_file',

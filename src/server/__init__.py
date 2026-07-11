@@ -1,6 +1,6 @@
 # src/server/__init__.py
 """
-Server module for HTTP and WebSocket servers
+Módulo de servidor para servidores HTTP e WebSocket.
 """
 
 from .http_server import run_http_server

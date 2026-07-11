@@ -1,21 +1,32 @@
-// Main application logic
+/**
+ * Aplicação cliente para streaming de vídeo com medição de latência
+ * 
+ * Este script gerencia a conexão WebSocket, receção de frames,
+ * medição de latência (T1 a T5), exibição no canvas e exportação de métricas.
+ */
+
+// ============================================================
+// ESTADO DA APLICAÇÃO
+// ============================================================
 const appState = {
-    streaming: false,
-    frameRequested: false,
+    streaming: false,          // Indica se o stream está ativo
+    frameRequested: false,     // Previne pedidos duplicados de frames
     metrics: {
-        frameCount: 0,
-        fpsStartTime: null,
-        fpsFrameCount: 0,
-        latencyHistory: [],
-        t1History: [],
-        t2History: [],
-        t3History: [],
-        t4History: [],
-        t5History: []
+        frameCount: 0,         // Contador de frames recebidos
+        fpsStartTime: null,    // Tempo de início para cálculo de FPS
+        fpsFrameCount: 0,      // Contador de frames para FPS
+        latencyHistory: [],    // Histórico de latência total
+        t1History: [],         // Histórico de T1 (captura)
+        t2History: [],         // Histórico de T2 (processamento servidor)
+        t3History: [],         // Histórico de T3 (rede)
+        t4History: [],         // Histórico de T4 (descodificação)
+        t5History: []          // Histórico de T5 (rendering)
     }
 };
 
-// DOM elements
+// ============================================================
+// REFERÊNCIAS AOS ELEMENTOS DOM
+// ============================================================
 const elements = {
     canvas: document.getElementById('videoCanvas'),
     ctx: document.getElementById('videoCanvas').getContext('2d'),
@@ -39,27 +50,44 @@ const elements = {
     latencyTotal: document.getElementById('latencyTotal')
 };
 
-// Initialize URLs
+// ============================================================
+// FUNÇÕES DE INICIALIZAÇÃO
+// ============================================================
+
+/**
+ * Inicializa as URLs do servidor HTTPS e WebSocket
+ */
 function initializeUrls() {
     const serverIp = window.location.hostname || 'localhost';
     elements.httpsUrl.textContent = `https://${serverIp}:8000`;
     elements.wsUrl.textContent = `wss://${serverIp}:3001`;
 }
 
-// Update status display
+// ============================================================
+// FUNÇÕES DE INTERFACE
+// ============================================================
+
+/**
+ * Atualiza a mensagem de estado na interface
+ * 
+ * @param {string} message - Mensagem a exibir
+ * @param {boolean} isError - Se true, exibe com estilo de erro
+ */
 function updateStatus(message, isError = false) {
     elements.status.textContent = "Status: " + message;
     if (isError) {
-        elements.status.style.borderLeftColor = '#f44336';
+        elements.status.style.borderLeftColor = '#f44336';  // Vermelho (erro)
         elements.status.style.background = '#ffebee';
     } else {
-        elements.status.style.borderLeftColor = '#4CAF50';
+        elements.status.style.borderLeftColor = '#4CAF50';  // Verde (ok)
         elements.status.style.background = '#f8f9fa';
     }
-    console.log("Status:", message);
+    console.log("Estado:", message);
 }
 
-// Update FPS counter
+/**
+ * Atualiza o contador de FPS na interface
+ */
 function updateFPS() {
     const now = performance.now();
     if (!appState.metrics.fpsStartTime) {
@@ -69,6 +97,7 @@ function updateFPS() {
     
     appState.metrics.fpsFrameCount++;
     
+    // Calcula o FPS a cada segundo
     if (now - appState.metrics.fpsStartTime >= 1000) {
         const fps = (appState.metrics.fpsFrameCount * 1000) / (now - appState.metrics.fpsStartTime);
         elements.fpsCounter.textContent = fps.toFixed(1);
@@ -77,61 +106,81 @@ function updateFPS() {
     }
 }
 
-// WebSocket message handler
+// ============================================================
+// FUNÇÕES DE PROCESSAMENTO WEBSOCKET
+// ============================================================
+
+/**
+ * Handler para mensagens recebidas via WebSocket
+ * Processa o frame e mede a latência (T4 e T5)
+ * 
+ * @param {MessageEvent} event - Evento da mensagem WebSocket
+ */
 async function onWebSocketMessage(event) {
     appState.frameRequested = false;
     
     try {
         const data = JSON.parse(event.data);
         
+        // Verifica se contém dados de imagem
         if (data.metadata && data.image_data) {
-            // Start T4 decoding measurement
+            // ============================================================
+            // T4: MEDIÇÃO DO TEMPO DE DESCODIFICAÇÃO
+            // ============================================================
             const decodeStartTime = performance.now();
             
-            // Convert hex string back to bytes
+            // Converte string hexadecimal para bytes
             const hexString = data.image_data;
             const byteArray = new Uint8Array(hexString.match(/.{1,2}/g).map(byte => parseInt(byte, 16)));
             
-            // Create blob and decode image
+            // Cria um Blob e descodifica a imagem
             const blob = new Blob([byteArray], { type: 'image/jpeg' });
             const imageBitmap = await createImageBitmap(blob);
             
-            // End T4 decoding measurement
+            // Fim da medição T4
             const decodeEndTime = performance.now();
             const t4Decoding = decodeEndTime - decodeStartTime;
             
-            // Start T5 rendering measurement
+            // ============================================================
+            // T5: MEDIÇÃO DO TEMPO DE RENDERIZAÇÃO
+            // ============================================================
             const renderStartTime = performance.now();
             
-            // Draw to canvas
+            // Desenha a imagem no canvas
             elements.ctx.clearRect(0, 0, elements.canvas.width, elements.canvas.height);
             elements.ctx.drawImage(imageBitmap, 0, 0, elements.canvas.width, elements.canvas.height);
             
-            // End T5 rendering measurement
+            // Fim da medição T5
             const renderEndTime = performance.now();
             const t5Rendering = renderEndTime - renderStartTime;
             
-            // Calculate T3 network latency using RTT/2
-            let t3Network = 5; // Default value
+            // ============================================================
+            // T3: CÁLCULO DA LATÊNCIA DE REDE (RTT/2)
+            // ============================================================
+            let t3Network = 5; // Valor padrão
 
             if (window.lastFrameRequestTime) {
                 const roundTripTime = performance.now() - window.lastFrameRequestTime;
-                t3Network = Math.max(0, roundTripTime / 2);
-                t3Network = Math.min(Math.max(t3Network, 1), 200);
+                t3Network = Math.max(0, roundTripTime / 2);  // Estima o sentido único
+                t3Network = Math.min(Math.max(t3Network, 1), 200);  // Limita entre 1 e 200ms
             }
 
-            // Store request time for next frame
+            // Armazena o tempo do pedido para o próximo frame
             window.lastFrameRequestTime = performance.now();
             
-            // Calculate total latency
+            // ============================================================
+            // CÁLCULO DA LATÊNCIA TOTAL
+            // ============================================================
             const totalLatency = t3Network + t4Decoding + t5Rendering;
             
-            // Update display
+            // ============================================================
+            // ATUALIZAÇÃO DA INTERFACE
+            // ============================================================
             elements.frameCount.textContent = ++appState.metrics.frameCount;
             elements.totalLatency.textContent = totalLatency.toFixed(1);
             elements.resolution.textContent = `${imageBitmap.width}x${imageBitmap.height}`;
             
-            // Update latency breakdown
+            // Atualiza a decomposição da latência
             elements.t1Capture.textContent = data.metadata.t1_capture.toFixed(1);
             elements.t2Processing.textContent = data.metadata.t2_processing.toFixed(1);
             elements.t3Network.textContent = t3Network.toFixed(1);
@@ -139,10 +188,12 @@ async function onWebSocketMessage(event) {
             elements.t5Rendering.textContent = t5Rendering.toFixed(1);
             elements.latencyTotal.textContent = totalLatency.toFixed(1);
             
-            // Update FPS
+            // Atualiza o FPS
             updateFPS();
             
-            // Send latency report back to server
+            // ============================================================
+            // ENVIO DO RELATÓRIO DE LATÊNCIA PARA O SERVIDOR
+            // ============================================================
             const latencyReport = {
                 type: "latency_report",
                 data: {
@@ -158,9 +209,14 @@ async function onWebSocketMessage(event) {
             
             WebSocketManager.send(latencyReport);
             
+            // ============================================================
+            // ATUALIZAÇÃO DO ESTADO
+            // ============================================================
             updateStatus(`Streaming - Frame: ${appState.metrics.frameCount} | Latency: ${totalLatency.toFixed(1)}ms`);
             
-            // Store history
+            // ============================================================
+            // ARMAZENAMENTO DO HISTÓRICO (MANTÉM APENAS OS ÚLTIMOS 100)
+            // ============================================================
             appState.metrics.latencyHistory.push(totalLatency);
             appState.metrics.t1History.push(data.metadata.t1_capture);
             appState.metrics.t2History.push(data.metadata.t2_processing);
@@ -168,7 +224,7 @@ async function onWebSocketMessage(event) {
             appState.metrics.t4History.push(t4Decoding);
             appState.metrics.t5History.push(t5Rendering);
             
-            // Keep only last 100 samples
+            // Remove o mais antigo se exceder 100 amostras
             if (appState.metrics.latencyHistory.length > 100) {
                 appState.metrics.latencyHistory.shift();
                 appState.metrics.t1History.shift();
@@ -178,26 +234,35 @@ async function onWebSocketMessage(event) {
                 appState.metrics.t5History.shift();
             }
             
-            // Request next frame if still streaming
+            // ============================================================
+            // SOLICITA O PRÓXIMO FRAME (A ~60 FPS)
+            // ============================================================
             if (appState.streaming) {
                 setTimeout(requestFrame, 16); // ~60 FPS
             }
         }
     } catch (error) {
-        console.error("Error processing frame:", error);
-        updateStatus("Error processing frame", true);
+        console.error("Quadro de processamento de erros:", error);
+        updateStatus("Quadro de processamento de erros", true);
     }
 }
 
-// Request a frame from server
+// ============================================================
+// FUNÇÕES DE CONTROLO
+// ============================================================
+
+/**
+ * Solicita um frame ao servidor
+ */
 function requestFrame() {
+    // Verifica se está em streaming e se a conexão está ativa
     if (!appState.streaming || appState.frameRequested || !WebSocketManager.isConnected()) {
         return;
     }
     
     appState.frameRequested = true;
     
-    // Store timestamp for RTT calculation
+    // Armazena o timestamp para cálculo do RTT
     window.lastFrameRequestTime = performance.now();
     
     try {
@@ -209,13 +274,15 @@ function requestFrame() {
         WebSocketManager.send(requestData);
         appState.frameRequested = false;
     } catch (error) {
-        console.error("Error sending frame request:", error);
-        updateStatus("Error requesting frame", true);
+        console.error("Erro ao enviar pedido de quadro:", error);
+        updateStatus("Erro ao solicitar o quadro", true);
         appState.frameRequested = false;
     }
 }
 
-// Start streaming
+/**
+ * Inicia o streaming
+ */
 function startStream() {
     console.log("startStream called");
     if (!appState.streaming && WebSocketManager.isConnected()) {
@@ -227,11 +294,13 @@ function startStream() {
         elements.frameCount.textContent = "0";
         requestFrame();
     } else if (!WebSocketManager.isConnected()) {
-        updateStatus("WebSocket not connected. Click 'Connect' first.", true);
+        updateStatus("WebSocket não ligado. Clique em 'Ligar' primeiro.", true);
     }
 }
 
-// Stop streaming
+/**
+ * Para o streaming
+ */
 function stopStream() {
     console.log("stopStream called");
     appState.streaming = false;
@@ -241,52 +310,66 @@ function stopStream() {
     elements.ctx.clearRect(0, 0, elements.canvas.width, elements.canvas.height);
 }
 
-// Connect WebSocket
+// ============================================================
+// FUNÇÕES DE CONEXÃO WEBSOCKET
+// ============================================================
+
+/**
+ * Conecta ao servidor WebSocket
+ */
 function connectWebSocket() {
-    updateStatus("Connecting to WebSocket...");
+    updateStatus("Ligar ao WebSocket...");
     elements.connectBtn.disabled = true;
     
     WebSocketManager.connect(
-        // onOpen
+        // onOpen - Chamado quando a conexão é estabelecida
         () => {
             updateStatus("Connected! Click 'Start Stream' to begin.");
             WebSocketManager.reconnectAttempts = 0;
             elements.startBtn.disabled = false;
-            console.log("WebSocket connection established");
+            console.log("Ligação WebSocket estabelecida");
         },
-        // onMessage
+        // onMessage - Chamado quando uma mensagem é recebida
         onWebSocketMessage,
-        // onClose
+        // onClose - Chamado quando a conexão é fechada
         (event) => {
             updateStatus(`Disconnected. Code: ${event.code}, Reason: ${event.reason || 'Unknown'}`, true);
             elements.connectBtn.disabled = false;
             elements.startBtn.disabled = true;
             elements.stopBtn.disabled = true;
             
+            // Tenta reconectar automaticamente
             if (appState.streaming && WebSocketManager.reconnectAttempts < WebSocketManager.maxReconnectAttempts) {
                 WebSocketManager.reconnectAttempts++;
                 updateStatus(`Reconnecting (attempt ${WebSocketManager.reconnectAttempts}/${WebSocketManager.maxReconnectAttempts})...`);
                 setTimeout(connectWebSocket, 2000);
             }
         },
-        // onError
+        // onError - Chamado em caso de erro
         (error) => {
-            updateStatus("Connection error", true);
-            console.error("WebSocket error:", error);
+            updateStatus("Erro de ligação", true);
+            console.error("Erro de WebSocket:", error);
             elements.connectBtn.disabled = false;
         }
     );
 }
 
-// Export metrics to CSV
+// ============================================================
+// EXPORTAÇÃO DE MÉTRICAS
+// ============================================================
+
+/**
+ * Exporta as métricas de latência para um ficheiro CSV
+ */
 function exportMetrics() {
     if (appState.metrics.latencyHistory.length === 0) {
-        updateStatus("No metrics to export", true);
+        updateStatus("Sem métricas para exportar", true);
         return;
     }
     
+    // Constrói o conteúdo CSV
     const csvContent = [
-        ['Frame', 'T1 Capture', 'T2 Processing', 'T3 Network', 'T4 Decoding', 'T5 Rendering', 'Total'],
+        ['Frame', 'T1 Captura', 'T2 Processamento', 'T3 Rede', 'T4 Descodificação', 'T5 Redndering', 'Total'],
         ...appState.metrics.latencyHistory.map((total, index) => [
             index + 1,
             appState.metrics.t1History[index] || 0,
@@ -298,6 +381,7 @@ function exportMetrics() {
         ])
     ].map(row => row.join(',')).join('\n');
     
+    // Cria e descarrega o ficheiro
     const blob = new Blob([csvContent], { type: 'text/csv' });
     const url = window.URL.createObjectURL(blob);
     const a = document.createElement('a');
@@ -308,19 +392,29 @@ function exportMetrics() {
     document.body.removeChild(a);
     window.URL.revokeObjectURL(url);
     
-    updateStatus("Metrics exported to CSV file");
+    updateStatus("Métricas exportadas para ficheiro CSV");
 }
 
-// Initialize event listeners
+// ============================================================
+// INICIALIZAÇÃO DE EVENTOS
+// ============================================================
+
+/**
+ * Inicializa os event listeners dos botões e atalhos de teclado
+ */
 function initializeEventListeners() {
+    // Botões principais
     elements.startBtn.addEventListener('click', startStream);
     elements.stopBtn.addEventListener('click', stopStream);
     elements.connectBtn.addEventListener('click', connectWebSocket);
     elements.refreshBtn.addEventListener('click', () => location.reload());
     elements.exportBtn.addEventListener('click', exportMetrics);
     
-    // Keyboard shortcuts
+    // ============================================================
+    // ATALHOS DE TECLADO
+    // ============================================================
     document.addEventListener('keydown', function(e) {
+        // Espaço - Iniciar/Parar streaming
         if (e.key === ' ' || e.key === 'Spacebar') {
             e.preventDefault();
             if (appState.streaming) {
@@ -328,38 +422,52 @@ function initializeEventListeners() {
             } else {
                 startStream();
             }
+        // C - Conectar WebSocket
         } else if (e.key === 'c' || e.key === 'C') {
             e.preventDefault();
             connectWebSocket();
+        // R - Recarregar página
         } else if (e.key === 'r' || e.key === 'R') {
             e.preventDefault();
             location.reload();
+        // E - Exportar métricas
         } else if (e.key === 'e' || e.key === 'E') {
             e.preventDefault();
             exportMetrics();
         }
     });
     
-    // Clean up on page unload
+    // ============================================================
+    // LIMPEZA AO SAIR DA PÁGINA
+    // ============================================================
     window.addEventListener('beforeunload', function() {
         appState.streaming = false;
         WebSocketManager.disconnect();
     });
 }
 
-// Initialize application
+// ============================================================
+// INICIALIZAÇÃO DA APLICAÇÃO
+// ============================================================
+
+/**
+ * Inicializa a aplicação
+ */
 function initializeApp() {
     console.log("Initializing application...");
     initializeUrls();
     initializeEventListeners();
-    updateStatus("Page loaded. Click .u.jhgmjjjh'Connect' to begin.");
+    updateStatus("Page loaded. Click 'Connect' to begin.");
     
-    // Auto-connect after 1 second
+    // Auto-conexão após 1 segundo
     setTimeout(() => {
         console.log("Auto-connecting WebSocket...");
         connectWebSocket();
     }, 1000);
 }
 
-// Start the application when page loads
+// ============================================================
+// PONTO DE ENTRADA
+// ============================================================
+// Inicia a aplicação quando a página termina de carregar
 window.addEventListener('load', initializeApp);
