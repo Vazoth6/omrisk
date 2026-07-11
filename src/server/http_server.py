@@ -7,14 +7,14 @@ from src.utils.ssl_helper import generate_self_signed_cert
 
 def run_http_server(http_port, current_frame, frame_lock, connected_clients, 
                     latency_metrics, html_content, system_monitor=None, 
-                    fps_capture_shared=None):
+                    fps_capture_shared=None, fps_transmission_shared=None):
     """Run HTTP server with SSL"""
     server_address = ('0.0.0.0', http_port)
     
-    # Create handler with context including system_monitor and fps_capture_shared
+    # Create handler with context including all metrics
     handler_class = create_handler_with_context(
         current_frame, frame_lock, connected_clients, latency_metrics, 
-        html_content, system_monitor, fps_capture_shared
+        html_content, system_monitor, fps_capture_shared, fps_transmission_shared
     )
     
     httpd = HTTPServer(server_address, handler_class)

@@ -10,7 +10,7 @@ from src.camera.capture import capture_frames
 from src.metrics.latency_tracker import latency_metrics, print_latency_summary
 from src.metrics.metrics_collector import MetricsCollector
 from src.metrics.reporters import MetricsReporter
-from src.metrics.system_monitor import SystemMonitor  # NOVO
+from src.metrics.system_monitor import SystemMonitor
 from src.server.http_server import run_http_server
 from src.server.streaming_server import run_websocket_server
 from src.utils.network import get_ip_address, check_port_available, get_system_info
@@ -33,8 +33,11 @@ frame_lock = threading.Lock()
 # Shared T1 capture time between capture thread and WebSocket server
 capture_t1_shared = [0.0]
 
-# Shared FPS capture value (NOVO)
+# Shared FPS capture value
 fps_capture_shared = [0.0]
+
+# Shared FPS transmission value (NEW)
+fps_transmission_shared = [0.0]
 
 # Configuration
 SERVER_IP = get_ip_address()
@@ -91,7 +94,7 @@ def main():
         generate_self_signed_cert()
     
     # ==========================================
-    # START SYSTEM MONITOR (NOVO)
+    # START SYSTEM MONITOR
     # ==========================================
     print("\n📊 Starting System Monitor")
     print("-" * 40)
@@ -147,7 +150,8 @@ def main():
     http_thread = threading.Thread(
         target=run_http_server,
         args=(HTTP_PORT, current_frame, frame_lock, connected_clients, 
-              latency_metrics, html_content, system_monitor, fps_capture_shared),
+              latency_metrics, html_content, system_monitor, 
+              fps_capture_shared, fps_transmission_shared),  # ADDED
         daemon=True,
         name="HTTP-Server"
     )
@@ -162,7 +166,7 @@ def main():
     ws_thread = threading.Thread(
         target=run_websocket_server,
         args=(WS_PORT, current_frame, frame_lock, connected_clients, 
-              latency_metrics, capture_t1_shared),
+              latency_metrics, capture_t1_shared, fps_transmission_shared),  # ADDED
         daemon=True,
         name="WebSocket-Server"
     )
@@ -213,9 +217,16 @@ def main():
     time.sleep(1)
     print_latency_summary()
     
+    # FPS statistics tracking (NEW)
+    fps_capture_history = []
+    fps_transmission_history = []
+    fps_stats_interval = 10
+    
     # Keep main thread alive and print periodic summaries
     try:
         last_summary_time = time.time()
+        last_fps_stats_time = time.time()
+        
         while True:
             time.sleep(1)
             
@@ -224,13 +235,40 @@ def main():
             if current_time - last_summary_time >= 10:
                 print_latency_summary()
                 last_summary_time = current_time
+            
+            # Collect FPS statistics every second
+            if fps_capture_shared[0] > 0:
+                fps_capture_history.append(fps_capture_shared[0])
+            if fps_transmission_shared[0] > 0:
+                fps_transmission_history.append(fps_transmission_shared[0])
+            
+            # Print FPS statistics every 10 seconds (NEW)
+            if current_time - last_fps_stats_time >= fps_stats_interval:
+                if fps_capture_history:
+                    avg_cap = sum(fps_capture_history) / len(fps_capture_history)
+                    max_cap = max(fps_capture_history)
+                    min_cap = min(fps_capture_history)
+                    print(f"\n📊 FPS STATISTICS (last {len(fps_capture_history)} samples):")
+                    print(f"  📷 Capture - Avg: {avg_cap:.1f} | Max: {max_cap:.1f} | Min: {min_cap:.1f} FPS")
                 
+                if fps_transmission_history:
+                    avg_tx = sum(fps_transmission_history) / len(fps_transmission_history)
+                    max_tx = max(fps_transmission_history)
+                    min_tx = min(fps_transmission_history)
+                    print(f"  📤 Transmission - Avg: {avg_tx:.1f} | Max: {max_tx:.1f} | Min: {min_tx:.1f} FPS")
+                
+                # Reset histories after printing
+                fps_capture_history = []
+                fps_transmission_history = []
+                last_fps_stats_time = current_time
+            
             # Display status with T1 and FPS values
             with frame_lock:
                 frame_status = "Active" if current_frame[0] is not None else "No frame"
             
             current_t1 = capture_t1_shared[0] if capture_t1_shared[0] > 0 else 0
-            current_fps = fps_capture_shared[0] if fps_capture_shared else 0
+            current_fps_cap = fps_capture_shared[0] if fps_capture_shared else 0
+            current_fps_tx = fps_transmission_shared[0] if fps_transmission_shared else 0
             
             # Get system stats
             stats = system_monitor.get_stats()
@@ -239,7 +277,8 @@ def main():
             
             print(f"\r📊 Status: Camera: {frame_status} | "
                   f"T1: {current_t1:.1f}ms | "
-                  f"FPS: {current_fps:.1f} | "
+                  f"FPS Cap: {current_fps_cap:.1f} | "
+                  f"FPS Tx: {current_fps_tx:.1f} | "
                   f"CPU: {cpu:.1f}% | "
                   f"RAM: {ram:.0f}MB | "
                   f"Clients: {len(connected_clients)} | "
@@ -273,7 +312,7 @@ def main():
                 print(f"{metric_name:20s}: {avg:6.2f}ms ({len(values)} samples)")
         
         # ==========================================
-        # PRINT SYSTEM STATISTICS (NOVO)
+        # PRINT SYSTEM STATISTICS
         # ==========================================
         stats = system_monitor.get_stats()
         print("\n📊 SYSTEM STATISTICS:")
@@ -284,7 +323,32 @@ def main():
         print(f"  RAM Total:   {stats['ram']['total_mb']:.1f} MB")
         print(f"  Samples:     {stats['cpu']['samples']}")
         
-        print(f"\n  FPS Capture:    {fps_capture_shared[0]:.1f}")
+        # ==========================================
+        # PRINT FPS STATISTICS (NEW)
+        # ==========================================
+        print("\n📊 FPS STATISTICS (Final):")
+        
+        # Capture FPS
+        capture_fps_values = latency_metrics.get('fps_capture', [])
+        if capture_fps_values:
+            print(f"  📷 Capture FPS:")
+            print(f"     Average: {sum(capture_fps_values)/len(capture_fps_values):.1f} FPS")
+            print(f"     Maximum: {max(capture_fps_values):.1f} FPS")
+            print(f"     Minimum: {min(capture_fps_values):.1f} FPS")
+            print(f"     Samples: {len(capture_fps_values)}")
+        else:
+            print(f"  📷 Capture FPS: No data collected")
+        
+        # Transmission FPS
+        transmission_fps_values = latency_metrics.get('fps_transmission', [])
+        if transmission_fps_values:
+            print(f"  📤 Transmission FPS:")
+            print(f"     Average: {sum(transmission_fps_values)/len(transmission_fps_values):.1f} FPS")
+            print(f"     Maximum: {max(transmission_fps_values):.1f} FPS")
+            print(f"     Minimum: {min(transmission_fps_values):.1f} FPS")
+            print(f"     Samples: {len(transmission_fps_values)}")
+        else:
+            print(f"  📤 Transmission FPS: No data collected (no client connected)")
         
         # Cleanup
         with frame_lock:
@@ -305,7 +369,7 @@ if __name__ == "__main__":
         "websockets",
         "opencv-python",
         "numpy",
-        "psutil"  # NOVO
+        "psutil"
     ]
     
     print("Required Python packages:")

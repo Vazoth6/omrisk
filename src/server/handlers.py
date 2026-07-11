@@ -9,7 +9,8 @@ from src.web import get_static_file, get_mime_type
 _handler_context = {}
 
 def set_handler_context(current_frame, frame_lock, connected_clients, latency_metrics, 
-                        html_content, system_monitor=None, fps_capture_shared=None):
+                        html_content, system_monitor=None, fps_capture_shared=None,
+                        fps_transmission_shared=None):
     """Set the global context for the handler"""
     global _handler_context
     _handler_context = {
@@ -18,8 +19,9 @@ def set_handler_context(current_frame, frame_lock, connected_clients, latency_me
         'connected_clients': connected_clients,
         'latency_metrics': latency_metrics,
         'html_content': html_content,
-        'system_monitor': system_monitor,  # NOVO
-        'fps_capture_shared': fps_capture_shared  # NOVO
+        'system_monitor': system_monitor,
+        'fps_capture_shared': fps_capture_shared,
+        'fps_transmission_shared': fps_transmission_shared  # NEW
     }
 
 class SimpleHTTPRequestHandler(BaseHTTPRequestHandler):
@@ -128,7 +130,7 @@ class SimpleHTTPRequestHandler(BaseHTTPRequestHandler):
                     frame_exists = current_frame_container is not None
             
             # ==========================================
-            # SYSTEM METRICS (NOVO)
+            # SYSTEM METRICS
             # ==========================================
             system_stats = {}
             system_monitor = _handler_context.get('system_monitor')
@@ -136,12 +138,17 @@ class SimpleHTTPRequestHandler(BaseHTTPRequestHandler):
                 system_stats = system_monitor.get_stats()
             
             # ==========================================
-            # FPS METRICS (NOVO)
+            # FPS METRICS (UPDATED)
             # ==========================================
             fps_capture = 0
-            fps_shared = _handler_context.get('fps_capture_shared')
-            if fps_shared and isinstance(fps_shared, list):
-                fps_capture = round(fps_shared[0], 1)
+            fps_capture_shared = _handler_context.get('fps_capture_shared')
+            if fps_capture_shared and isinstance(fps_capture_shared, list):
+                fps_capture = round(fps_capture_shared[0], 1)
+            
+            fps_transmission = 0
+            fps_transmission_shared = _handler_context.get('fps_transmission_shared')
+            if fps_transmission_shared and isinstance(fps_transmission_shared, list):
+                fps_transmission = round(fps_transmission_shared[0], 1)
             
             # ==========================================
             # BUILD RESPONSE
@@ -152,6 +159,7 @@ class SimpleHTTPRequestHandler(BaseHTTPRequestHandler):
                 "system": system_stats,
                 "fps": {
                     "capture": fps_capture,
+                    "transmission": fps_transmission  # NEW
                 },
                 "connected_clients": len(_handler_context.get('connected_clients', set())),
                 "current_frame": frame_exists
@@ -165,8 +173,10 @@ class SimpleHTTPRequestHandler(BaseHTTPRequestHandler):
         pass
 
 def create_handler_with_context(current_frame, frame_lock, connected_clients, latency_metrics, 
-                                html_content, system_monitor=None, fps_capture_shared=None):
+                                html_content, system_monitor=None, fps_capture_shared=None,
+                                fps_transmission_shared=None):
     """Create a handler with the required context"""
     set_handler_context(current_frame, frame_lock, connected_clients, latency_metrics, 
-                        html_content, system_monitor, fps_capture_shared)
+                        html_content, system_monitor, fps_capture_shared, 
+                        fps_transmission_shared)
     return SimpleHTTPRequestHandler

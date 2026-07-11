@@ -24,7 +24,7 @@ def add_timestamp_to_frame(frame, timestamp_ns):
         return frame
 
 async def ws_handler(websocket, current_frame, frame_lock, latency_metrics, 
-                     clients_set, capture_t1_shared=None):
+                     clients_set, capture_t1_shared=None, fps_transmission_shared=None):
     """WebSocket handler with complete server-side timing"""
     client_addr = None
     try:
@@ -46,6 +46,9 @@ async def ws_handler(websocket, current_frame, frame_lock, latency_metrics,
             'last_fps_update': time.time(),
             'fps': 0.0
         }
+        
+        # Store FPS values for statistics (NEW)
+        fps_values = []
         
         # Server timing storage
         server_timings = {
@@ -166,8 +169,32 @@ async def ws_handler(websocket, current_frame, frame_lock, latency_metrics,
                         current_time = time.time()
                         if current_time - client_metrics['last_fps_update'] >= 1.0:
                             client_metrics['fps'] = client_metrics['fps_frame_count'] / (current_time - client_metrics['last_fps_update'])
+                            
+                            # Store FPS value for statistics (NEW)
+                            fps_values.append(client_metrics['fps'])
+                            if len(fps_values) > 1000:
+                                fps_values.pop(0)
+                            
+                            # Store in latency_metrics for final statistics (NEW)
+                            if 'fps_transmission' not in latency_metrics:
+                                latency_metrics['fps_transmission'] = []
+                            latency_metrics['fps_transmission'].append(client_metrics['fps'])
+                            
+                            # Share with main thread (NEW)
+                            if fps_transmission_shared is not None and isinstance(fps_transmission_shared, list):
+                                fps_transmission_shared[0] = client_metrics['fps']
+                            
                             client_metrics['fps_frame_count'] = 0
                             client_metrics['last_fps_update'] = current_time
+                            
+                            # Calculate FPS statistics (NEW)
+                            if fps_values:
+                                avg_fps = sum(fps_values) / len(fps_values)
+                                max_fps = max(fps_values)
+                                min_fps = min(fps_values)
+                                print(f"\n📊 TRANSMISSION FPS STATS (last {len(fps_values)} samples):")
+                                print(f"   Avg: {avg_fps:.1f} | Max: {max_fps:.1f} | Min: {min_fps:.1f} FPS")
+                            
                             print(f"📊 Client FPS: {client_metrics['fps']:.1f}")
                         
                         # Print detailed server timing every 30 frames
@@ -229,7 +256,8 @@ async def ws_handler(websocket, current_frame, frame_lock, latency_metrics,
             print(f"👋 Client removed. Total clients: {len(clients_set)}")
 
 async def start_websocket_server(ws_port, current_frame, frame_lock, latency_metrics, 
-                                 connected_clients, capture_t1_shared=None):
+                                 connected_clients, capture_t1_shared=None, 
+                                 fps_transmission_shared=None):
     """Start WebSocket server"""
     print(f"\n🚀 Starting WebSocket server on port {ws_port}...")
     
@@ -247,7 +275,7 @@ async def start_websocket_server(ws_port, current_frame, frame_lock, latency_met
         
         async def handler(websocket):
             await ws_handler(websocket, current_frame, frame_lock, latency_metrics, 
-                           connected_clients, capture_t1_shared)
+                           connected_clients, capture_t1_shared, fps_transmission_shared)
         
         async with websockets.serve(
             handler, 
@@ -278,7 +306,8 @@ async def start_websocket_server(ws_port, current_frame, frame_lock, latency_met
         traceback.print_exc()
 
 def run_websocket_server(ws_port, current_frame, frame_lock, connected_clients, 
-                        latency_metrics, capture_t1_shared=None):
+                        latency_metrics, capture_t1_shared=None, 
+                        fps_transmission_shared=None):
     """Run WebSocket server in its own event loop"""
     print("🔵 Starting WebSocket thread...")
     
@@ -288,7 +317,7 @@ def run_websocket_server(ws_port, current_frame, frame_lock, connected_clients,
     try:
         loop.run_until_complete(start_websocket_server(ws_port, current_frame, frame_lock, 
                                                        latency_metrics, connected_clients, 
-                                                       capture_t1_shared))
+                                                       capture_t1_shared, fps_transmission_shared))
     except KeyboardInterrupt:
         print("\n⚠️ WebSocket interrupted")
     except Exception as e:

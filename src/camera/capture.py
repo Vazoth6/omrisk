@@ -56,6 +56,10 @@ def capture_frames(camera_index, current_frame, frame_lock, latency_metrics,
     # Store T1 values for statistics
     t1_values = []
     
+    # Store FPS values for statistics (NEW)
+    fps_values = []
+    last_fps_record_time = time.time()
+    
     try:
         while True:
             # Measure T1: Capture latency
@@ -93,6 +97,17 @@ def capture_frames(camera_index, current_frame, frame_lock, latency_metrics,
                 fps_calc = fps_frame_count / (current_time - last_fps_update)
                 if fps_shared is not None and isinstance(fps_shared, list):
                     fps_shared[0] = fps_calc
+                
+                # Store FPS value for statistics (NEW)
+                fps_values.append(fps_calc)
+                if len(fps_values) > 1000:  # Keep last 1000 samples
+                    fps_values.pop(0)
+                
+                # Store in latency_metrics for final statistics (NEW)
+                if 'fps_capture' not in latency_metrics:
+                    latency_metrics['fps_capture'] = []
+                latency_metrics['fps_capture'].append(fps_calc)
+                
                 fps_frame_count = 0
                 last_fps_update = current_time
             
@@ -105,6 +120,14 @@ def capture_frames(camera_index, current_frame, frame_lock, latency_metrics,
                 # Calculate average T1
                 avg_t1 = sum(t1_values) / len(t1_values) if t1_values else 0
                 
+                # Calculate FPS statistics (NEW)
+                if fps_values:
+                    avg_fps = sum(fps_values) / len(fps_values)
+                    max_fps = max(fps_values)
+                    min_fps = min(fps_values)
+                else:
+                    avg_fps = max_fps = min_fps = 0
+                
                 print(f"\n{'='*50}")
                 print(f"📊 CAPTURE STATUS (Server)")
                 print(f"{'='*50}")
@@ -112,6 +135,8 @@ def capture_frames(camera_index, current_frame, frame_lock, latency_metrics,
                 print(f"  Frame size: {frame.shape[1]}x{frame.shape[0]}")
                 print(f"  📷 T1 Capture (last): {t1_capture:.2f}ms")
                 print(f"  📷 T1 Capture (avg):  {avg_t1:.2f}ms")
+                print(f"\n  📊 FPS Stats (last {len(fps_values)} samples):")
+                print(f"     Avg: {avg_fps:.1f} | Max: {max_fps:.1f} | Min: {min_fps:.1f}")
                 
                 # Verify frame was stored correctly
                 with frame_lock:
